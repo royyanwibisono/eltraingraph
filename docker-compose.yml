@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  app:
+    image: rainwalker/pydev
+    volumes:
+      - "./build/web:/app"
+    ports:
+      - "5000:5000"
+    entrypoint: /bin/sh -c
+    command: 
+      - 'until cd /app; do echo "retying in 3 sec..."; sleep 3; done; echo "volume mounted"; cd /app; python3 -m http.server 5000'
+      # - 'tail -f /dev/null'
+      # - 'screen -d -m tail -f /dev/null; until cd /app/core/lib; do echo "retying in 3 sec..."; sleep 3; done; echo "volume mounted"; cd /app/core; screen -d -m python main.py'
