@@ -172,12 +172,12 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
             : const BorderRadius.all(Radius.circular(10)),
         tabs: const <Widget>[
           Tab(
-            icon: Icon(Icons.schedule),
-            text: "SCHEDULE",
-          ),
-          Tab(
             icon: Icon(Icons.flag_outlined),
             text: "STATIONS",
+          ),
+          Tab(
+            icon: Icon(Icons.schedule),
+            text: "SCHEDULE",
           ),
           Tab(
             icon: Icon(Icons.auto_graph),
@@ -189,16 +189,16 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
   List<Widget> createTabsContent() {
     return <Widget>[
       ContentPage(
-        title: "Train Schedule",
-        iconData: Icons.table_chart_outlined,
-        child: Container(),
+        title: "Station List",
+        iconData: Icons.flag,
+        child: Center(child: Text("Station List")),
         index: 0,
         key: _myContentKeys[0],
       ),
       ContentPage(
-        title: "Station List",
-        iconData: Icons.flag,
-        child: Container(),
+        title: "Train Schedule",
+        iconData: Icons.table_chart_outlined,
+        child: Center(child: Text("Train Schedule")),
         index: 1,
         key: _myContentKeys[1],
       ),

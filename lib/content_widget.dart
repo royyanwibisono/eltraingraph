@@ -45,7 +45,7 @@ class ContentPageState extends State<ContentPage> {
       if (!isAnimate) {
         return MyStaDat.scrollState[widget.index] < 0.0
             ? _scrllcontroller.jumpTo(0.0)
-            : _scrllcontroller.position.maxScrollExtent! >=
+            : _scrllcontroller.position.maxScrollExtent >=
                     MyStaDat.scrollState[widget.index]
                 ? _scrllcontroller.jumpTo(MyStaDat.scrollState[widget.index])
                 : _scrllcontroller
@@ -55,7 +55,7 @@ class ContentPageState extends State<ContentPage> {
             ? _scrllcontroller.animateTo(0.0,
                 duration: Duration(milliseconds: aniDuration),
                 curve: Curves.fastOutSlowIn)
-            : _scrllcontroller.position.maxScrollExtent! >=
+            : _scrllcontroller.position.maxScrollExtent >=
                     MyStaDat.scrollState[widget.index]
                 ? _scrllcontroller.animateTo(MyStaDat.scrollState[widget.index],
                     duration: Duration(milliseconds: aniDuration),
@@ -140,7 +140,10 @@ class ContentPageState extends State<ContentPage> {
                         child: SizedBox(
                           width: panelWidth,
                           height: panelHeight - panelTitleHeight - 30,
-                          child: Center(child: Text('Filled Card')),
+                          child: widget.child ??
+                              const Center(
+                                child: Text("COntent"),
+                              ),
                         ),
                       ),
                     ),

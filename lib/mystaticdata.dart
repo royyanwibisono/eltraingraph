@@ -1,7 +1,5 @@
 // ignore_for_file: constant_identifier_names
 
-import 'dart:ffi';
-
 class MyStaDat {
   static const String APPTITLE = "EltrainGraph";
   static const String APPTITLE_LONG = "Elsicom Train Graph";
