@@ -3,6 +3,8 @@ import 'package:eltraingraph/mycolors.dart';
 import 'package:eltraingraph/myresponsive.dart';
 import 'package:eltraingraph/content_widget.dart';
 import 'package:eltraingraph/mystaticdata.dart';
+import 'package:eltraingraph/stationlist_widget.dart';
+import 'package:eltraingraph/trainlist_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -20,9 +22,10 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
   List<GlobalKey<ContentPageState>> _myContentKeys = [
     new GlobalKey<ContentPageState>(),
     new GlobalKey<ContentPageState>(),
+    new GlobalKey<ContentPageState>(),
     new GlobalKey<ContentPageState>()
   ];
-
+  GlobalKey<TrainListState> trListKey = GlobalKey<TrainListState>();
   // @override
   // void initState() {
   //   super.initState();
@@ -176,6 +179,10 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
             text: "STATIONS",
           ),
           Tab(
+            icon: Icon(Icons.train),
+            text: "TRAINS",
+          ),
+          Tab(
             icon: Icon(Icons.schedule),
             text: "SCHEDULE",
           ),
@@ -191,23 +198,72 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
       ContentPage(
         title: "Station List",
         iconData: Icons.flag,
-        child: Center(child: Text("Station List")),
+        child: StationList(),
         index: 0,
         key: _myContentKeys[0],
+      ),
+      ContentPage(
+        title: "Train List",
+        iconData: Icons.train,
+        panelButtons: [
+          ElevatedButton(
+            onPressed: () {
+              if (MyStaDat.selectedIndexTrain != 0) {
+                setState(() {
+                  MyStaDat.selectedIndexTrain = 0;
+                  trListKey.currentState!.loadData();
+                });
+              }
+            },
+            style: MyStaDat.selectedIndexTrain == 0
+                ? MyStaDat.styleBtnPanelAct
+                : MyStaDat.styleBtnPanelInAct,
+            child:
+                MediaQuery.of(context).size.width < MyResponsive.PHONEWIDTHMAX
+                    ? Text('to RIGHT')
+                    : Text('Direction to RIGHT'),
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          ElevatedButton(
+            child:
+                MediaQuery.of(context).size.width < MyResponsive.PHONEWIDTHMAX
+                    ? Text('to LEFT')
+                    : Text('Direction to LEFT'),
+            onPressed: () {
+              if (MyStaDat.selectedIndexTrain != 1) {
+                setState(() {
+                  MyStaDat.selectedIndexTrain = 1;
+                  trListKey.currentState!.loadData();
+                });
+              }
+            },
+            style: MyStaDat.selectedIndexTrain == 1
+                ? MyStaDat.styleBtnPanelAct
+                : MyStaDat.styleBtnPanelInAct,
+          ),
+          SizedBox(
+            width: 40,
+          ),
+        ],
+        index: 1,
+        key: _myContentKeys[1],
+        child: TrainList(key: trListKey),
       ),
       ContentPage(
         title: "Train Schedule",
         iconData: Icons.table_chart_outlined,
         child: Center(child: Text("Train Schedule")),
-        index: 1,
-        key: _myContentKeys[1],
+        index: 2,
+        key: _myContentKeys[2],
       ),
       ContentPage(
         title: "Train Graph",
         iconData: Icons.add_chart,
         child: Container(),
-        index: 2,
-        key: _myContentKeys[2],
+        index: 3,
+        key: _myContentKeys[3],
       )
     ];
   }

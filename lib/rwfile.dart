@@ -1,39 +1,39 @@
-import 'dart:convert';
-import 'dart:html' as html;
+// import 'dart:convert';
+// import 'dart:html' as html;
 
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
-class WebDownload extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: ElevatedButton(
-              child: Text("download"),
-              onPressed: () {
-                final text = 'this is the text file';
+// class WebDownload extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: Scaffold(
+//         body: Center(
+//           child: ElevatedButton(
+//               child: Text("download"),
+//               onPressed: () {
+//                 final text = 'this is the text file';
 
-                // prepare
-                final bytes = utf8.encode(text);
-                final blob = html.Blob([bytes]);
-                final url = html.Url.createObjectUrlFromBlob(blob);
-                final anchor =
-                    html.document.createElement('a') as html.AnchorElement
-                      ..href = url
-                      ..style.display = 'none'
-                      ..download = 'some_name.txt';
-                html.document.body?.children.add(anchor);
+//                 // prepare
+//                 final bytes = utf8.encode(text);
+//                 final blob = html.Blob([bytes]);
+//                 final url = html.Url.createObjectUrlFromBlob(blob);
+//                 final anchor =
+//                     html.document.createElement('a') as html.AnchorElement
+//                       ..href = url
+//                       ..style.display = 'none'
+//                       ..download = 'some_name.txt';
+//                 html.document.body?.children.add(anchor);
 
-                // download
-                anchor.click();
+//                 // download
+//                 anchor.click();
 
-                // cleanup
-                html.document.body?.children.remove(anchor);
-                html.Url.revokeObjectUrl(url);
-              }),
-        ),
-      ),
-    );
-  }
-}
+//                 // cleanup
+//                 html.document.body?.children.remove(anchor);
+//                 html.Url.revokeObjectUrl(url);
+//               }),
+//         ),
+//       ),
+//     );
+//   }
+// }

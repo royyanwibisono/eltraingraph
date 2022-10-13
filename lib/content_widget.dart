@@ -7,21 +7,15 @@ class ContentPage extends StatefulWidget {
   final String title;
   final IconData? iconData;
   final Widget? child;
+  final List<Widget>? panelButtons;
   final int index;
 
-  // const ContentPage(
-  //     {
-  //       Key? key,
-  //     required this.title,
-  //     this.iconData = Icons.crop_square,
-  //     this.child,
-  //     required this.index})
-  //     : super(key: key);
   const ContentPage(
       {super.key,
       required this.title,
       this.iconData = Icons.crop_square,
       this.child,
+      this.panelButtons,
       required this.index});
 
   @override
@@ -77,7 +71,7 @@ class ContentPageState extends State<ContentPage> {
   @override
   Widget build(BuildContext context) {
     const double panelHeight = 1000;
-    const double panelWidth = 1440;
+    const double panelWidth = MyResponsive.TABLETMAX;
     const double panelTitleHeight = 75;
     return Container(
       child: NotificationListener<ScrollNotification>(
@@ -103,9 +97,9 @@ class ContentPageState extends State<ContentPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                      child: SizedBox(
+                      child: Container(
                         width: panelWidth,
-                        height: panelHeight,
+                        constraints: BoxConstraints(minHeight: panelHeight),
                         child: Align(
                           alignment: Alignment.topLeft,
                           child: Padding(
@@ -128,21 +122,32 @@ class ContentPageState extends State<ContentPage> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: panelTitleHeight + 30),
+                    Container(
+                      margin: EdgeInsets.only(top: 78),
+                      width: panelWidth,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: widget.panelButtons == null
+                            ? []
+                            : widget.panelButtons!,
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: panelTitleHeight + 30),
                       child: Card(
-                        elevation: 0,
+                        elevation: 4,
                         color: MyAppColors.PANEL_COLOR,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
-                        child: SizedBox(
+                        child: Container(
                           width: panelWidth,
-                          height: panelHeight - panelTitleHeight - 30,
+                          constraints: BoxConstraints(
+                              minHeight: panelHeight - panelTitleHeight - 30),
+                          // height: panelHeight - panelTitleHeight - 30,
                           child: widget.child ??
                               const Center(
-                                child: Text("COntent"),
+                                child: Text("Content"),
                               ),
                         ),
                       ),
