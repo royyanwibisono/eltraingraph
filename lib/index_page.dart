@@ -1,10 +1,16 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:eltraingraph/login_page.dart';
 import 'package:eltraingraph/mycolors.dart';
 import 'package:eltraingraph/myresponsive.dart';
 import 'package:eltraingraph/content_widget.dart';
 import 'package:eltraingraph/mystaticdata.dart';
+import 'package:eltraingraph/schedule_widget.dart';
 import 'package:eltraingraph/stationlist_widget.dart';
 import 'package:eltraingraph/trainlist_widget.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -16,25 +22,18 @@ class IndexPage extends StatefulWidget {
 }
 
 class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  TabController? tabController = null;
+  TabController? tabController;
   double appBarWidth = MyResponsive.PHONEWIDTHMAX;
-  List<GlobalKey<ContentPageState>> _myContentKeys = [
-    new GlobalKey<ContentPageState>(),
-    new GlobalKey<ContentPageState>(),
-    new GlobalKey<ContentPageState>(),
-    new GlobalKey<ContentPageState>()
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final List<GlobalKey<ContentPageState>> _myContentKeys = [
+    GlobalKey<ContentPageState>(),
+    GlobalKey<ContentPageState>(),
+    GlobalKey<ContentPageState>(),
+    GlobalKey<ContentPageState>()
   ];
-  GlobalKey<TrainListState> trListKey = GlobalKey<TrainListState>();
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) => postInitState());
-  // }
-
-  // void postInitState() {
-  //   tabController!.index = MyStaDat.selectedIndex;
-  // }
+  var trListKey = GlobalKey<TrainListState>();
+  var stListKey = GlobalKey<StationListState>();
+  var schdleKey = GlobalKey<SchedulesState>();
 
   @override
   Widget build(BuildContext context) {
@@ -198,55 +197,14 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
       ContentPage(
         title: "Station List",
         iconData: Icons.flag,
-        child: StationList(),
         index: 0,
         key: _myContentKeys[0],
+        child: StationList(key: stListKey),
       ),
       ContentPage(
         title: "Train List",
         iconData: Icons.train,
-        panelButtons: [
-          ElevatedButton(
-            onPressed: () {
-              if (MyStaDat.selectedIndexTrain != 0) {
-                setState(() {
-                  MyStaDat.selectedIndexTrain = 0;
-                  trListKey.currentState!.loadData();
-                });
-              }
-            },
-            style: MyStaDat.selectedIndexTrain == 0
-                ? MyStaDat.styleBtnPanelAct
-                : MyStaDat.styleBtnPanelInAct,
-            child:
-                MediaQuery.of(context).size.width < MyResponsive.PHONEWIDTHMAX
-                    ? Text('to RIGHT')
-                    : Text('Direction to RIGHT'),
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          ElevatedButton(
-            child:
-                MediaQuery.of(context).size.width < MyResponsive.PHONEWIDTHMAX
-                    ? Text('to LEFT')
-                    : Text('Direction to LEFT'),
-            onPressed: () {
-              if (MyStaDat.selectedIndexTrain != 1) {
-                setState(() {
-                  MyStaDat.selectedIndexTrain = 1;
-                  trListKey.currentState!.loadData();
-                });
-              }
-            },
-            style: MyStaDat.selectedIndexTrain == 1
-                ? MyStaDat.styleBtnPanelAct
-                : MyStaDat.styleBtnPanelInAct,
-          ),
-          SizedBox(
-            width: 40,
-          ),
-        ],
+        panelButtons: createPanelDirBtns(),
         index: 1,
         key: _myContentKeys[1],
         child: TrainList(key: trListKey),
@@ -254,26 +212,80 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
       ContentPage(
         title: "Train Schedule",
         iconData: Icons.table_chart_outlined,
-        child: Center(child: Text("Train Schedule")),
+        panelButtons: createPanelDirBtns(),
         index: 2,
         key: _myContentKeys[2],
+        child: Schedules(key: schdleKey),
       ),
       ContentPage(
         title: "Train Graph",
         iconData: Icons.add_chart,
-        child: Container(),
         index: 3,
         key: _myContentKeys[3],
+        child: Container(),
       )
     ];
   }
 
+  List<Widget> createPanelDirBtns() {
+    return [
+      ElevatedButton(
+        onPressed: () {
+          if (MyStaDat.selectedIndexTrain != 0) {
+            setState(() {
+              MyStaDat.selectedIndexTrain = 0;
+              reloadDataPage();
+            });
+          }
+        },
+        style: MyStaDat.selectedIndexTrain == 0
+            ? MyStaDat.styleBtnPanelAct
+            : MyStaDat.styleBtnPanelInAct,
+        child: MediaQuery.of(context).size.width < MyResponsive.PHONEWIDTHMAX
+            ? Text('to RIGHT')
+            : Text('Direction to RIGHT'),
+      ),
+      const SizedBox(
+        width: 5,
+      ),
+      ElevatedButton(
+        onPressed: () {
+          if (MyStaDat.selectedIndexTrain != 1) {
+            setState(() {
+              MyStaDat.selectedIndexTrain = 1;
+              reloadDataPage();
+            });
+          }
+        },
+        style: MyStaDat.selectedIndexTrain == 1
+            ? MyStaDat.styleBtnPanelAct
+            : MyStaDat.styleBtnPanelInAct,
+        child: MediaQuery.of(context).size.width < MyResponsive.PHONEWIDTHMAX
+            ? Text('to LEFT')
+            : Text('Direction to LEFT'),
+      ),
+      SizedBox(
+        width: 40,
+      ),
+    ];
+  }
+
+  void reloadDataPage() {
+    if (MyStaDat.selectedIndex == 0) {
+      stListKey.currentState!.loadData();
+    } else if (MyStaDat.selectedIndex == 1) {
+      trListKey.currentState!.loadData();
+    } else if (MyStaDat.selectedIndex == 2) {
+      schdleKey.currentState!.loadData();
+    }
+  }
+
   Stack createSidebarContent(BuildContext context) {
+    const textStyleLight =
+        TextStyle(color: MyAppColors.FONT_LIGHT_COLOR, fontSize: 14);
     return Stack(
       children: [
         ListView(
-          // Important: Remove any padding from the ListView.
-          // padding: EdgeInsets.zero,
           children: [
             Material(
               elevation: 2,
@@ -316,32 +328,104 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
               ),
             ),
             Container(
-              padding: EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Information",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: MyAppColors.FONT_LIGHT_COLOR),
+                  Padding(
+                    padding: EdgeInsets.all(20),
+                    child: RichText(
+                      textAlign: TextAlign.justify,
+                      text: const TextSpan(
+                        style: textStyleLight,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Information \n',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                              text: 'EltrainGraph ',
+                              style:
+                                  TextStyle(color: MyAppColors.PRIMARY_COLOR)),
+                          TextSpan(
+                              text:
+                                  'is  is an application, that enables operator to create train graphs in convenient way to display the graphs both in a planning mode, as well as in a live mode according to the specific delays of trains. '),
+                        ],
+                      ),
+                    ),
                   ),
-                  RichText(
-                    text: const TextSpan(
-                      style: TextStyle(
-                          color: MyAppColors.FONT_LIGHT_COLOR, fontSize: 14),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: 'The information is ',
-                            style:
-                                TextStyle(color: MyAppColors.FONT_LINK_COLOR)),
-                        TextSpan(
-                            text:
-                                'from the output, you can see that the spacing is '),
-                        TextSpan(
-                            text:
-                                'important to determine whether multiple texts '),
-                        TextSpan(text: 'should be treated as one word or not.'),
+                  Container(
+                    color: MyAppColors.PRIMARY_COLOR,
+                    margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    height: 1,
+                  ),
+                  Card(
+                    elevation: 0,
+                    color: MyAppColors.ACCENT_COLOR,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(
+                            Icons.file_open,
+                            color: MyAppColors.FONT_LIGHT_COLOR,
+                          ),
+                          title: const Text(
+                            'Open File',
+                            style: textStyleLight,
+                          ),
+                          onTap: () async {
+                            closeSideNavBar(context);
+                            FilePickerResult? result =
+                                await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: ['xml', 'fpl'],
+                            );
+
+                            if (result != null) {
+                              if (kIsWeb) {
+                                Uint8List fileBytes = result.files.first.bytes!;
+                                String contents =
+                                    String.fromCharCodes(fileBytes);
+                                MyStaDat.A?.updateData(contents);
+                                reloadDataPage();
+                              } else {
+                                File file = File(result.files.single.path!);
+                                file.readAsString().then((String contents) {
+                                  MyStaDat.A?.updateData(contents);
+                                  reloadDataPage();
+                                });
+                              }
+                            }
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(
+                            Icons.filter_center_focus,
+                            color: MyAppColors.FONT_LIGHT_COLOR,
+                          ),
+                          title: const Text(
+                            'Expand',
+                            style: textStyleLight,
+                          ),
+                          onTap: () {
+                            closeSideNavBar(context);
+                            expandWidget(context);
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(
+                            Icons.refresh,
+                            color: MyAppColors.FONT_LIGHT_COLOR,
+                          ),
+                          title: const Text(
+                            'Reload',
+                            style: textStyleLight,
+                          ),
+                          onTap: () {
+                            closeSideNavBar(context);
+                            reloadDataPage();
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -360,6 +444,11 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
                 color: MyAppColors.ACCENT_COLOR,
                 child: Column(
                   children: [
+                    Container(
+                      color: MyAppColors.PRIMARY_COLOR,
+                      margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      height: 1,
+                    ),
                     const AboutListTile(
                       icon: Icon(
                         Icons.info,
@@ -381,18 +470,18 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
                       ],
                       child: Text('About app'),
                     ),
-                    ListTile(
-                      leading: const Icon(
-                        Icons.logout,
-                      ),
-                      title: const Text('Sign Out'),
-                      onTap: () {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginPage()));
-                      },
-                    ),
+                    // ListTile(
+                    //   leading: const Icon(
+                    //     Icons.logout,
+                    //   ),
+                    //   title: const Text('Sign Out'),
+                    //   onTap: () {
+                    //     Navigator.pushReplacement(
+                    //         context,
+                    //         MaterialPageRoute(
+                    //             builder: (context) => const LoginPage()));
+                    //   },
+                    // ),
                   ],
                 ),
               ),
@@ -401,6 +490,48 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
         ),
       ],
     );
+  }
+
+  void expandWidget(BuildContext context) {
+    if (MyStaDat.selectedIndex == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const StationList(
+            isExpand: true,
+          ),
+          // builder: (context) => const SliverIndexPage(),
+        ),
+      );
+    } else if (MyStaDat.selectedIndex == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const TrainList(
+            isExpand: true,
+          ),
+          // builder: (context) => const SliverIndexPage(),
+        ),
+      );
+    } else if (MyStaDat.selectedIndex == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Schedules(
+            isExpand: true,
+          ),
+          // builder: (context) => const SliverIndexPage(),
+        ),
+      );
+    }
+  }
+
+  void closeSideNavBar(BuildContext context) {
+    if (!MyStaDat.showSideNavBar ||
+        MediaQuery.of(context).size.width <=
+            (MyResponsive.PHONEWIDTHMAX + MyResponsive.NAVBARWIDTH)) {
+      Navigator.pop(context);
+    }
   }
 
   Stack createMainPage(BuildContext context, List<Widget> myTabcontents,
@@ -436,10 +567,10 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   icon: const Icon(Icons.logout),
                   onPressed: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginPage()));
+                    // Navigator.pushReplacement(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => const LoginPage()));
                   },
                 ),
               ],
@@ -485,10 +616,10 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
                         icon: const Icon(Icons.logout),
                         color: MyAppColors.ACCENT_COLOR,
                         onPressed: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginPage()));
+                          // Navigator.pushReplacement(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => const LoginPage()));
                         },
                       ),
                     )

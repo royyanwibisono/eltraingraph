@@ -1,29 +1,31 @@
+// ignore_for_file: import_of_legacy_library_into_null_safe
+
+import 'package:eltraingraph/expanded_widget.dart';
 import 'package:eltraingraph/mycolors.dart';
 import 'package:eltraingraph/myresponsive.dart';
 import 'package:eltraingraph/mystaticdata.dart';
 import 'package:flutter/material.dart';
-import 'package:xml/xml.dart' as xml;
 import 'package:flutter_tags/flutter_tags.dart';
 
-class StationList extends StatefulWidget {
+class StationList extends ExpandedSTF {
   const StationList({
     Key? key,
-  }) : super(key: key);
+    bool isExpand = false,
+  }) : super(key: key, isExpand: isExpand);
 
   @override
-  State<StationList> createState() => StationListState();
+  State<ExpandedSTF> createState() => StationListState();
 }
 
-class StationListState extends State<StationList> {
+class StationListState extends ExpandedSTFState {
   // This list will be displayed in the ListView
   List _stations = [];
 
   // This function will be triggered when the app starts
-  void _loadData() async {
-    if (MyStaDat.A != null && MyStaDat.A!.traingraphxml.isNotEmpty) {
-      final document = xml.XmlDocument.parse(MyStaDat.A!.traingraphxml);
-      final temporaryList = MyStaDat.loadStation(document);
-      final stationList = MyStaDat.loadStation(document);
+  @override
+  void loadData() {
+    if (MyStaDat.A != null && MyStaDat.A!.stationlist != null) {
+      final stationList = MyStaDat.A!.stationlist!;
       if (stationList.length >= 2) {
         MyStaDat.dirRight =
             "Trains from ${stationList.first['name']} heading to ${stationList.last['name']}";
@@ -33,7 +35,7 @@ class StationListState extends State<StationList> {
 
       // Update the UI
       setState(() {
-        _stations = temporaryList;
+        _stations = stationList;
       });
     }
   }
@@ -106,8 +108,8 @@ class StationListState extends State<StationList> {
             combine: ItemTagsCombine.withTextAfter,
             elevation: 0,
             textColor: Colors.white,
-            color: MyAppColors.ACCENT_COLOR,
-            activeColor: MyAppColors.ACCENT_COLOR,
+            color: MyAppColors.TAGS_COLOR,
+            activeColor: MyAppColors.TAGS_COLOR,
             key: Key((_stations[index]['name'] + "_t" + index.toString())),
             icon: ItemTagsIcon(
               icon: d['dTi'] == item['name'] || d['dTa'] == item['name']
@@ -121,40 +123,56 @@ class StationListState extends State<StationList> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _loadData();
+  getTitle() {
+    var text = Text(
+      "Station Count : ${_stations.length}",
+      style: const TextStyle(fontWeight: FontWeight.bold),
+    );
+    if (widget.isExpand) {
+      return text;
+    } else {
+      return [
+        const SizedBox(height: 15),
+        ListTile(
+          title: text,
+          leading: const Icon(Icons.arrow_forward_ios),
+        )
+      ];
+    }
   }
 
   @override
-  Widget build(BuildContext context) {
+  getChild() {
     var _w = MediaQuery.of(context).size.width -
         (MyStaDat.showSideNavBar ? MyResponsive.NAVBARWIDTH : 0);
     _w = _w < 300 ? 300.0 : _w;
-    return Container(
-        padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 15),
-            ListTile(
-              title: Text(
-                "Station Count : ${_stations.length}",
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              leading: const Icon(Icons.arrow_forward_ios),
-            ),
-            ...(_w < MyResponsive.PHOTRAITMAX
-                ? createColList(1)
-                : _w < MyResponsive.PHONEWIDTHMAX
-                    ? createColList(2)
-                    : _w < MyResponsive.TABLETMAX
-                        ? createColList(3)
-                        : _w < MyResponsive.HDWIDTH
-                            ? createColList(4)
-                            : createColList(5))
-          ],
-        ));
+    if (widget.isExpand) {
+      return ListView(
+        children: [
+          ...(_w < MyResponsive.PHOTRAITMAX
+              ? createColList(1)
+              : _w < MyResponsive.PHONEWIDTHMAX
+                  ? createColList(2)
+                  : _w < MyResponsive.TABLETMAX
+                      ? createColList(3)
+                      : _w < MyResponsive.HDWIDTH
+                          ? createColList(4)
+                          : createColList(5)),
+          const SizedBox(
+            height: 100,
+          )
+        ],
+      );
+    } else {
+      return (_w < MyResponsive.PHOTRAITMAX
+          ? createColList(1)
+          : _w < MyResponsive.PHONEWIDTHMAX
+              ? createColList(2)
+              : _w < MyResponsive.TABLETMAX
+                  ? createColList(3)
+                  : _w < MyResponsive.HDWIDTH
+                      ? createColList(4)
+                      : createColList(5));
+    }
   }
 }

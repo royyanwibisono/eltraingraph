@@ -14,6 +14,8 @@ class MyAppColors {
   static const Color PANEL_COLOR = Color.fromARGB(255, 223, 222, 222);
   static const Color PANEL_COLOR_INACT = Color.fromARGB(255, 155, 155, 155);
   static const Color SHADOW_COLOR = Color.fromARGB(69, 7, 7, 7);
-  static const Color SELECTEDTABLINE =
-      Color(0xff003585); /*Color.fromARGB(255, 252, 185, 0);*/
+  static const Color SELECTEDTABLINE = Color(0xff003585);
+  static const Color TABLEHEADER = Color.fromARGB(86, 255, 235, 59);
+  static const Color TABLECONTENT = Color.fromARGB(86, 0, 153, 255);
+  static const Color TAGS_COLOR = Color.fromARGB(169, 0, 100, 167);
 }

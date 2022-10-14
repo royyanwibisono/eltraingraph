@@ -1,73 +1,53 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 
-import 'package:eltraingraph/mycolors.dart';
+import 'package:eltraingraph/expanded_widget.dart';
 import 'package:eltraingraph/myresponsive.dart';
 import 'package:eltraingraph/mystaticdata.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tags/flutter_tags.dart';
-import 'package:xml/xml.dart' as xml;
 
-class TrainList extends StatefulWidget {
+class TrainList extends ExpandedSTF {
   const TrainList({
     Key? key,
-  }) : super(key: key);
+    bool isExpand = false,
+  }) : super(key: key, isExpand: isExpand);
 
   @override
-  State<TrainList> createState() => TrainListState();
+  State<ExpandedSTF> createState() => TrainListState();
 }
 
-class TrainListState extends State<TrainList> {
+class TrainListState extends ExpandedSTFState {
   // This list will be displayed in the ListView
   List _trains = [];
 
   // This function will be triggered when the app starts
-  void loadData() async {
-    final temporaryList = [];
+  @override
+  void loadData() {
+    if (MyStaDat.A != null && MyStaDat.A!.stationlist != null) {
+      final stationList = MyStaDat.A!.stationlist!;
+      if (stationList.length >= 2) {
+        MyStaDat.dirRight =
+            "Trains from ${MyStaDat.A!.stationlist!.first['name']} heading to ${MyStaDat.A!.stationlist!.last['name']}";
+        MyStaDat.dirLeft =
+            "Trains from ${MyStaDat.A!.stationlist!.last['name']} heading to ${MyStaDat.A!.stationlist!.first['name']}";
+      }
+    }
+    if (MyStaDat.selectedIndexTrain > 0) {
+      if (MyStaDat.A != null && MyStaDat.A!.trainlistA != null) {
+        final trainlist = MyStaDat.A!.trainlistA!;
 
-    // Parse XML data
-    if (MyStaDat.A != null && MyStaDat.A!.traingraphxml.isNotEmpty) {
-      final document = xml.XmlDocument.parse(MyStaDat.A!.traingraphxml);
-      final trainsNode = document
-          .findElements('jTrainGraph_timetable')
-          .first
-          .findElements('trains')
-          .first;
-      final trainA = MyStaDat.selectedIndexTrain > 0
-          ? trainsNode.findElements('ta')
-          : trainsNode.findElements('ti');
-      // loop through the document and extract values
-      for (final ta in trainA) {
-        final temporaryTimeTable = [];
-        final timetable = ta.findElements('t');
+        setState(() {
+          _trains = trainlist;
+        });
+      }
+    } else {
+      if (MyStaDat.A != null && MyStaDat.A!.trainlistI != null) {
+        final trainlist = MyStaDat.A!.trainlistI!;
 
-        for (final t in timetable) {
-          temporaryTimeTable.add({
-            'a': t.getAttribute('a'),
-            'd': t.getAttribute('d'),
-            'at': t.getAttribute('at'),
-            'dt': t.getAttribute('dt'),
-          });
-        }
-        temporaryList.add({
-          'name': ta.getAttribute("name"),
-          "cm": ta.getAttribute("cm"),
-          "cl": ta.getAttribute("cl"),
-          "sh": ta.getAttribute("sh"),
-          "sz": ta.getAttribute("sz"),
-          "sy": ta.getAttribute("sy"),
-          "d": ta.getAttribute("d"),
-          "id": ta.getAttribute("d"),
-          't': temporaryTimeTable
+        setState(() {
+          _trains = trainlist;
         });
       }
     }
-
-    temporaryList
-        .sort((a, b) => int.parse(a['id']).compareTo(int.parse(b['id'])));
-    // Update the UI
-    setState(() {
-      _trains = temporaryList;
-    });
   }
 
   List<Row> createColList(int colCount) {
@@ -167,42 +147,56 @@ class TrainListState extends State<TrainList> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    loadData();
+  getTitle() {
+    var text = Text(
+      MyStaDat.selectedIndexTrain == 0 ? MyStaDat.dirRight : MyStaDat.dirLeft,
+      style: const TextStyle(fontWeight: FontWeight.bold),
+    );
+    if (widget.isExpand) {
+      return text;
+    } else {
+      return [
+        const SizedBox(height: 15),
+        ListTile(
+          title: text,
+          leading: const Icon(Icons.arrow_forward_ios),
+        ),
+      ];
+    }
   }
 
   @override
-  Widget build(BuildContext context) {
+  getChild() {
     var _w = MediaQuery.of(context).size.width -
         (MyStaDat.showSideNavBar ? MyResponsive.NAVBARWIDTH : 0);
     _w = _w < 300 ? 300.0 : _w;
-    return Container(
-        padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 15),
-            ListTile(
-              title: Text(
-                MyStaDat.selectedIndexTrain == 0
-                    ? MyStaDat.dirRight
-                    : MyStaDat.dirLeft,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              leading: Icon(Icons.arrow_forward_ios),
-            ),
-            ...(_w < MyResponsive.PHOTRAITMAX
-                ? createColList(1)
-                : _w < MyResponsive.PHONEWIDTHMAX
-                    ? createColList(2)
-                    : _w < MyResponsive.TABLETMAX
-                        ? createColList(3)
-                        : _w < MyResponsive.HDWIDTH
-                            ? createColList(4)
-                            : createColList(5))
-          ],
-        ));
+    if (widget.isExpand) {
+      return ListView(
+        children: [
+          ...(_w < MyResponsive.PHOTRAITMAX
+              ? createColList(1)
+              : _w < MyResponsive.PHONEWIDTHMAX
+                  ? createColList(2)
+                  : _w < MyResponsive.TABLETMAX
+                      ? createColList(3)
+                      : _w < MyResponsive.HDWIDTH
+                          ? createColList(4)
+                          : createColList(5)),
+          const SizedBox(
+            height: 100,
+          ),
+        ],
+      );
+    } else {
+      return (_w < MyResponsive.PHOTRAITMAX
+          ? createColList(1)
+          : _w < MyResponsive.PHONEWIDTHMAX
+              ? createColList(2)
+              : _w < MyResponsive.TABLETMAX
+                  ? createColList(3)
+                  : _w < MyResponsive.HDWIDTH
+                      ? createColList(4)
+                      : createColList(5));
+    }
   }
 }

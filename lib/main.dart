@@ -2,8 +2,10 @@
 
 import 'package:eltraingraph/fetchxmldata.dart';
 import 'package:eltraingraph/index_page.dart';
+import 'package:eltraingraph/multiplication_table.dart';
 // import 'package:eltraingraph/login_page.dart';
 import 'package:eltraingraph/mystaticdata.dart';
+import 'package:eltraingraph/schedule_widget.dart';
 // import 'package:eltraingraph/rwfile.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // home: LoginPage(),
       home: IndexPage(),
-      // home: WebDownload(),
+      // home: TestWidget(),
       title: 'EltrainGraph',
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
@@ -31,3 +33,33 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// class TestWidget extends StatefulWidget {
+//   const TestWidget({super.key});
+
+//   @override
+//   State<TestWidget> createState() => _TestWidgetState();
+// }
+
+// class _TestWidgetState extends State<TestWidget> {
+//   var data = [
+//     ["a0", "b", "c", "d", "e", "f"],
+//     ["a1", "b", "c", "d", "e", "f"]
+//   ];
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text("Test")),
+//       body: Container(
+//         // width: data[0].length * 80,
+//         // height: data.length * 25,
+//         color: Colors.red,
+//         child: MultiplicationTable(
+//           data: data,
+//           width: 80,
+//           height: 25,
+//         ),
+//       ),
+//     );
+//   }
+// }
