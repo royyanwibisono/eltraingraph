@@ -6,6 +6,7 @@ class FetchXmlData {
   List<dynamic>? stationlist;
   List<dynamic>? trainlistA;
   List<dynamic>? trainlistI;
+  Map<String, String>? graphProperties;
 
   // xml.XmlDocument? get document => _document;
 
@@ -16,12 +17,16 @@ class FetchXmlData {
       if (validelemen.isNotEmpty) {
         document = tdocument;
 
+        final mainprop = document!.findElements('jTrainGraph_timetable').first;
+        graphProperties = <String, String>{};
+        // mainprop.attributes
+        //     .map((atr) => graphProperties![atr.localName] = atr.value);
+        for (var atr in mainprop.attributes) {
+          graphProperties![atr.localName] = atr.value;
+        }
+
         stationlist = [];
-        final traingraphNode = document!
-            .findElements('jTrainGraph_timetable')
-            .first
-            .findElements('stations')
-            .first;
+        final traingraphNode = mainprop.findElements('stations').first;
         final station = traingraphNode.findElements('sta');
         // loop through the document and extract values
         for (final sta in station) {
@@ -53,11 +58,7 @@ class FetchXmlData {
 
         trainlistA = [];
         trainlistI = [];
-        final trainsNode = document!
-            .findElements('jTrainGraph_timetable')
-            .first
-            .findElements('trains')
-            .first;
+        final trainsNode = mainprop.findElements('trains').first;
 
         final trainA = trainsNode.findElements('ta');
         final trainI = trainsNode.findElements('ti');
