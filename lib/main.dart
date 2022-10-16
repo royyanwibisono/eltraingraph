@@ -2,10 +2,8 @@
 
 import 'package:eltraingraph/fetchxmldata.dart';
 import 'package:eltraingraph/index_page.dart';
-import 'package:eltraingraph/multiplication_table.dart';
 // import 'package:eltraingraph/login_page.dart';
 import 'package:eltraingraph/mystaticdata.dart';
-import 'package:eltraingraph/schedule_widget.dart';
 // import 'package:eltraingraph/rwfile.dart';
 import 'package:flutter/material.dart';
 

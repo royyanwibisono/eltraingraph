@@ -7,10 +7,6 @@ import 'package:flutter/material.dart';
 class MyStaDat {
   static const String APPTITLE = "EltrainGraph";
   static const String APPTITLE_LONG = "Elsicom Train Graph";
-  // static const String SCHEDULE = "Schedule";
-  // static const String STATION = "Station";
-  // static const String TRAINS = "Trains";
-  // static const String TGRAPH = "Graph";
   static var scrollState = List.filled(4, 0.0, growable: false);
   static bool showSideNavBar = true;
   static int selectedIndex = 0;

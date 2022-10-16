@@ -125,10 +125,11 @@ class SchedulesState extends ExpandedSTFState {
   getChild() {
     var cellWidth = MyStaDat.tableCellSize.width;
     var cellHeight = MyStaDat.tableCellSize.height;
-    var container = SizedBox(
+    var container = Container(
       // margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
       width: data.isNotEmpty ? data[0].length * cellWidth : 0,
       height: data.length * cellHeight,
+      // color: Colors.red,
       child: data.isNotEmpty
           ? MultiplicationTable(
               data: data, width: cellWidth, height: cellHeight)
@@ -138,9 +139,10 @@ class SchedulesState extends ExpandedSTFState {
     );
     if (widget.isExpand) {
       return container;
+    } else {
+      return [
+        container,
+      ];
     }
-    return [
-      container,
-    ];
   }
 }

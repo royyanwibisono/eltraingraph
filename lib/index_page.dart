@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:eltraingraph/login_page.dart';
 import 'package:eltraingraph/mycolors.dart';
@@ -8,6 +7,7 @@ import 'package:eltraingraph/content_widget.dart';
 import 'package:eltraingraph/mystaticdata.dart';
 import 'package:eltraingraph/schedule_widget.dart';
 import 'package:eltraingraph/stationlist_widget.dart';
+import 'package:eltraingraph/traingraph_widget.dart';
 import 'package:eltraingraph/trainlist_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -34,6 +34,7 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
   var trListKey = GlobalKey<TrainListState>();
   var stListKey = GlobalKey<StationListState>();
   var schdleKey = GlobalKey<SchedulesState>();
+  var graphKey = GlobalKey<TrainGraphsState>();
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +223,7 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
         iconData: Icons.add_chart,
         index: 3,
         key: _myContentKeys[3],
-        child: Container(),
+        child: TrainGraphs(key: graphKey),
       )
     ];
   }
@@ -277,6 +278,8 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
       trListKey.currentState!.loadData();
     } else if (MyStaDat.selectedIndex == 2) {
       schdleKey.currentState!.loadData();
+    } else if (MyStaDat.selectedIndex == 3) {
+      graphKey.currentState!.loadData();
     }
   }
 
@@ -518,6 +521,16 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
         context,
         MaterialPageRoute(
           builder: (context) => const Schedules(
+            isExpand: true,
+          ),
+          // builder: (context) => const SliverIndexPage(),
+        ),
+      );
+    } else if (MyStaDat.selectedIndex == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const TrainGraphs(
             isExpand: true,
           ),
           // builder: (context) => const SliverIndexPage(),
