@@ -75,11 +75,20 @@ class TrainListState extends ExpandedSTFState {
                           margin: EdgeInsets.only(left: 10, right: 10),
                           color: Colors.grey,
                         ),
+                        CheckboxListTile(
+                            title: const Text("Show in train graph."),
+                            value: _trains[index]['sh'] == 'true',
+                            onChanged: (value) {
+                              setState(() {
+                                _trains[index]['sh'] =
+                                    value! ? 'true' : 'false';
+                              });
+                            }),
                         ListTile(
                           title: Text("Operation Days: "),
                           subtitle: Container(
                             margin: EdgeInsets.fromLTRB(10, 2, 10, 10),
-                            child: createDayOp(_trains[index]),
+                            child: createDayOp(index),
                           ),
                         ),
                       ],
@@ -101,15 +110,14 @@ class TrainListState extends ExpandedSTFState {
     return res;
   }
 
-  Widget createDayOp(dynamic d) {
-    var opd = d['d'];
+  Widget createDayOp(index) {
     return Container(
       child: Center(
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: createCheckDay(opd),
+              children: createCheckDay(index),
             ),
           ],
         ),
@@ -117,30 +125,29 @@ class TrainListState extends ExpandedSTFState {
     );
   }
 
-  List<Widget> createCheckDay(String opd) {
+  List<Widget> createCheckDay(index) {
+    var opd = _trains[index]['d'];
     var res = <Widget>[];
     var days = "MTWTFSS";
     if (days.length == opd.length) {
       for (int i = 0; i < opd.length; i++) {
-        if (opd[i] == '1') {
-          res.add(Flexible(
-              flex: 1,
-              child: Column(
-                children: [
-                  Text(days[i]),
-                  const Icon(Icons.check_box),
-                ],
-              )));
-        } else {
-          res.add(Flexible(
-              flex: 1,
-              child: Column(
-                children: [
-                  Text(days[i]),
-                  const Icon(Icons.check_box_outline_blank),
-                ],
-              )));
-        }
+        res.add(Flexible(
+            flex: 1,
+            child: Column(
+              children: [
+                Text(days[i]),
+                Checkbox(
+                    value: opd[i] == '1',
+                    onChanged: (value) {
+                      var s = (_trains[index]['d'] as String)
+                          .replaceRange(i, i + 1, value! ? '1' : '0');
+                      print(s);
+                      setState(() {
+                        _trains[index]['d'] = s;
+                      });
+                    }),
+              ],
+            )));
       }
     }
     return res;
@@ -155,11 +162,14 @@ class TrainListState extends ExpandedSTFState {
     if (widget.isExpand) {
       return text;
     } else {
+      bool isMobile = MediaQuery.of(context).size.width -
+              (MyStaDat.showSideNavBar ? 0 : MyResponsive.NAVBARWIDTH) <
+          MyResponsive.PHONEWIDTHMAX;
       return [
         const SizedBox(height: 15),
         ListTile(
           title: text,
-          leading: const Icon(Icons.arrow_forward_ios),
+          leading: isMobile ? null : const Icon(Icons.arrow_forward_ios),
         ),
       ];
     }

@@ -1,5 +1,6 @@
 import 'package:eltraingraph/expanded_widget.dart';
 import 'package:eltraingraph/multiplication_table.dart';
+import 'package:eltraingraph/myresponsive.dart';
 import 'package:eltraingraph/mystaticdata.dart';
 import 'package:flutter/material.dart';
 
@@ -111,11 +112,14 @@ class SchedulesState extends ExpandedSTFState {
     if (widget.isExpand) {
       return text;
     } else {
+      bool isMobile = MediaQuery.of(context).size.width -
+              (MyStaDat.showSideNavBar ? 0 : MyResponsive.NAVBARWIDTH) <
+          MyResponsive.PHONEWIDTHMAX;
       return [
         const SizedBox(height: 15),
         ListTile(
           title: text,
-          leading: const Icon(Icons.arrow_forward_ios),
+          leading: isMobile ? null : const Icon(Icons.arrow_forward_ios),
         ),
       ];
     }
@@ -134,7 +138,7 @@ class SchedulesState extends ExpandedSTFState {
           ? MultiplicationTable(
               data: data, width: cellWidth, height: cellHeight)
           : const Center(
-              child: Text("loading data..."),
+              child: Text("empty data..."),
             ),
     );
     if (widget.isExpand) {

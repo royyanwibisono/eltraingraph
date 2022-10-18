@@ -5,6 +5,8 @@ import 'package:eltraingraph/mycolors.dart';
 import 'package:eltraingraph/myresponsive.dart';
 import 'package:eltraingraph/content_widget.dart';
 import 'package:eltraingraph/mystaticdata.dart';
+import 'package:eltraingraph/mystaticfunction.dart';
+// import 'package:eltraingraph/dwfile.dart';
 import 'package:eltraingraph/schedule_widget.dart';
 import 'package:eltraingraph/stationlist_widget.dart';
 import 'package:eltraingraph/traingraph_widget.dart';
@@ -35,6 +37,15 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
   var stListKey = GlobalKey<StationListState>();
   var schdleKey = GlobalKey<SchedulesState>();
   var graphKey = GlobalKey<TrainGraphsState>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => Future.delayed(const Duration(milliseconds: 500), () {
+              reloadDataPage();
+            }));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +167,10 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
   }
 
   TabBar createTabsBar() {
+    bool isMobile = MediaQuery.of(context).size.width -
+            (MyStaDat.showSideNavBar ? 0 : MyResponsive.NAVBARWIDTH) <
+        MyResponsive.PHONEWIDTHMAX;
+
     return TabBar(
         // indicatorColor: Colors.red,
         indicator: const BoxDecoration(
@@ -173,22 +188,22 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
         splashBorderRadius: MyStaDat.selectedIndex != 1
             ? const BorderRadius.all(Radius.circular(0))
             : const BorderRadius.all(Radius.circular(10)),
-        tabs: const <Widget>[
+        tabs: <Widget>[
           Tab(
-            icon: Icon(Icons.flag_outlined),
-            text: "STATIONS",
+            icon: const Icon(Icons.flag_outlined),
+            text: isMobile ? null : "STATIONS",
           ),
           Tab(
-            icon: Icon(Icons.train),
-            text: "TRAINS",
+            icon: const Icon(Icons.train),
+            text: isMobile ? null : "TRAINS",
           ),
           Tab(
-            icon: Icon(Icons.schedule),
-            text: "SCHEDULE",
+            icon: const Icon(Icons.schedule),
+            text: isMobile ? null : "SCHEDULE",
           ),
           Tab(
-            icon: Icon(Icons.auto_graph),
-            text: "GRAPH",
+            icon: const Icon(Icons.auto_graph),
+            text: isMobile ? null : "GRAPH",
           )
         ]);
   }
@@ -229,6 +244,10 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
   }
 
   List<Widget> createPanelDirBtns() {
+    bool isMobile = MediaQuery.of(context).size.width -
+            (MyStaDat.showSideNavBar ? 0 : MyResponsive.NAVBARWIDTH) <
+        MyResponsive.PHONEWIDTHMAX;
+
     return [
       ElevatedButton(
         onPressed: () {
@@ -246,9 +265,9 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
             ? Text('to RIGHT')
             : Text('Direction to RIGHT'),
       ),
-      const SizedBox(
-        width: 5,
-      ),
+      // const SizedBox(
+      //   width: 5,
+      // ),
       ElevatedButton(
         onPressed: () {
           if (MyStaDat.selectedIndexTrain != 1) {
@@ -266,7 +285,7 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
             : Text('Direction to LEFT'),
       ),
       SizedBox(
-        width: 40,
+        width: isMobile ? 10 : 40,
       ),
     ];
   }
@@ -367,40 +386,54 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
                     color: MyAppColors.ACCENT_COLOR,
                     child: Column(
                       children: [
-                        ListTile(
-                          leading: const Icon(
-                            Icons.file_open,
-                            color: MyAppColors.FONT_LIGHT_COLOR,
-                          ),
-                          title: const Text(
-                            'Open File',
-                            style: textStyleLight,
-                          ),
-                          onTap: () async {
-                            closeSideNavBar(context);
-                            FilePickerResult? result =
-                                await FilePicker.platform.pickFiles(
-                              type: FileType.custom,
-                              allowedExtensions: ['xml', 'fpl'],
-                            );
+                        // ListTile(
+                        //   leading: const Icon(
+                        //     Icons.file_open,
+                        //     color: MyAppColors.FONT_LIGHT_COLOR,
+                        //   ),
+                        //   title: const Text(
+                        //     'Open File',
+                        //     style: textStyleLight,
+                        //   ),
+                        //   onTap: () async {
+                        //     closeSideNavBar(context);
+                        //     FilePickerResult? result =
+                        //         await FilePicker.platform.pickFiles(
+                        //       type: FileType.custom,
+                        //       allowedExtensions: ['xml', 'fpl'],
+                        //     );
 
-                            if (result != null) {
-                              if (kIsWeb) {
-                                Uint8List fileBytes = result.files.first.bytes!;
-                                String contents =
-                                    String.fromCharCodes(fileBytes);
-                                MyStaDat.A?.updateData(contents);
-                                reloadDataPage();
-                              } else {
-                                File file = File(result.files.single.path!);
-                                file.readAsString().then((String contents) {
-                                  MyStaDat.A?.updateData(contents);
-                                  reloadDataPage();
-                                });
-                              }
-                            }
-                          },
-                        ),
+                        //     if (result != null) {
+                        //       if (kIsWeb) {
+                        //         Uint8List fileBytes = result.files.first.bytes!;
+                        //         String contents =
+                        //             String.fromCharCodes(fileBytes);
+                        //         MyStaDat.A?.updateData(contents);
+                        //         reloadDataPage();
+                        //       } else {
+                        //         File file = File(result.files.single.path!);
+                        //         file.readAsString().then((String contents) {
+                        //           MyStaDat.A?.updateData(contents);
+                        //           reloadDataPage();
+                        //         });
+                        //       }
+                        //     }
+                        //   },
+                        // ),
+                        // ListTile(
+                        //   leading: const Icon(
+                        //     Icons.save,
+                        //     color: MyAppColors.FONT_LIGHT_COLOR,
+                        //   ),
+                        //   title: const Text(
+                        //     'Save File',
+                        //     style: textStyleLight,
+                        //   ),
+                        //   onTap: () {
+                        //     closeSideNavBar(context);
+                        //     MyStFunc.saveFile(context);
+                        //   },
+                        // ),
                         ListTile(
                           leading: const Icon(
                             Icons.filter_center_focus,
@@ -429,6 +462,7 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
                             reloadDataPage();
                           },
                         ),
+                        const SizedBox(height: 60)
                       ],
                     ),
                   ),

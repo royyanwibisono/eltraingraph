@@ -8,7 +8,91 @@ class FetchXmlData {
   List<dynamic>? trainlistI;
   Map<String, String>? graphProperties;
 
-  // xml.XmlDocument? get document => _document;
+  void updateDocument() {
+    if (stationlist != null &&
+        stationlist != null &&
+        trainlistA != null &&
+        trainlistI != null &&
+        graphProperties != null) {
+      final builder = xml.XmlBuilder();
+      builder.processing('xml', 'version="1.0"');
+      builder.element("jTrainGraph_timetable", nest: () {
+        graphProperties!.forEach((key, value) {
+          builder.attribute(key, value);
+        });
+        builder.element('stations', nest: () {
+          for (var i = 0; i < stationlist!.length; i++) {
+            builder.element('sta', nest: () {
+              var tracks;
+              (Map.from(stationlist![i])).forEach((key, value) {
+                if (key != 'tracks') {
+                  builder.attribute(key, value);
+                } else {
+                  tracks = value;
+                }
+              });
+              if (tracks != null) {
+                for (var j = 0; j < (tracks as List).length; j++) {
+                  builder.element('track', nest: () {
+                    Map.from(tracks[j]).forEach((k, v) {
+                      builder.attribute(k, v);
+                    });
+                  });
+                }
+              }
+            });
+          }
+        });
+        builder.element('trains', nest: () {
+          // for i
+          for (var i = 0; i < trainlistI!.length; i++) {
+            builder.element('ti', nest: () {
+              var t;
+              Map.from(trainlistI![i]).forEach((key, value) {
+                if (key != 't') {
+                  builder.attribute(key, value);
+                } else {
+                  t = value;
+                }
+              });
+              if (t != null) {
+                for (var j = 0; j < (t as List).length; j++) {
+                  builder.element('t', nest: () {
+                    Map.from(t[j]).forEach((k, v) {
+                      builder.attribute(k, v);
+                    });
+                  });
+                }
+              }
+            });
+          }
+          // for a
+          for (var i = 0; i < trainlistA!.length; i++) {
+            builder.element('ta', nest: () {
+              var t;
+              Map.from(trainlistA![i]).forEach((key, value) {
+                if (key != 't') {
+                  builder.attribute(key, value);
+                } else {
+                  t = value;
+                }
+              });
+              if (t != null) {
+                for (var j = 0; j < (t as List).length; j++) {
+                  builder.element('t', nest: () {
+                    Map.from(t[j]).forEach((k, v) {
+                      builder.attribute(k, v);
+                    });
+                  });
+                }
+              }
+            });
+          }
+        });
+      });
+      document = builder.buildDocument();
+    }
+  }
 
   void updateData(String xmlDataString) {
     try {
