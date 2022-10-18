@@ -35,7 +35,7 @@ class ExpandedSTFState extends State<ExpandedSTF> {
     super.initState();
     //WidgetsBinding.instance.addPostFrameCallback((_) => loadData());
     //delay for smooth animation
-    Future.delayed(const Duration(milliseconds: 305), () {
+    Future.delayed(const Duration(milliseconds: 250), () {
       loadData();
     });
   }

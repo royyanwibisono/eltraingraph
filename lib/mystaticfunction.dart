@@ -57,9 +57,9 @@ class MyStFunc {
   }
 
   static Future<void> saveFile(context) async {
-    if (MyStaDat.A != null && MyStaDat.A!.document != null) {
-      MyStaDat.A!.updateDocument();
-      String source = MyStaDat.A!.document!.toXmlString(pretty: true);
+    if (MyStaDat.D != null && MyStaDat.D!.document != null) {
+      MyStaDat.D!.updateDocument();
+      String source = MyStaDat.D!.document!.toXmlString(pretty: true);
       List<int> list = utf8.encode(source);
       Uint8List bytes = Uint8List.fromList(list);
       await FileSaver.instance

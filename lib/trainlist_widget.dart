@@ -3,6 +3,7 @@
 import 'package:eltraingraph/expanded_widget.dart';
 import 'package:eltraingraph/myresponsive.dart';
 import 'package:eltraingraph/mystaticdata.dart';
+import 'package:eltraingraph/train_cardwidget.dart';
 import 'package:flutter/material.dart';
 
 class TrainList extends ExpandedSTF {
@@ -18,33 +19,36 @@ class TrainList extends ExpandedSTF {
 class TrainListState extends ExpandedSTFState {
   // This list will be displayed in the ListView
   List _trains = [];
+  TrainDirectionType _tdt = TrainDirectionType.A;
 
   // This function will be triggered when the app starts
   @override
   void loadData() {
-    if (MyStaDat.A != null && MyStaDat.A!.stationlist != null) {
-      final stationList = MyStaDat.A!.stationlist!;
+    if (MyStaDat.D != null && MyStaDat.D!.stationlist != null) {
+      final stationList = MyStaDat.D!.stationlist!;
       if (stationList.length >= 2) {
         MyStaDat.dirRight =
-            "Trains from ${MyStaDat.A!.stationlist!.first['name']} heading to ${MyStaDat.A!.stationlist!.last['name']}";
+            "Trains from ${MyStaDat.D!.stationlist!.first['name']} heading to ${MyStaDat.D!.stationlist!.last['name']}";
         MyStaDat.dirLeft =
-            "Trains from ${MyStaDat.A!.stationlist!.last['name']} heading to ${MyStaDat.A!.stationlist!.first['name']}";
+            "Trains from ${MyStaDat.D!.stationlist!.last['name']} heading to ${MyStaDat.D!.stationlist!.first['name']}";
       }
     }
     if (MyStaDat.selectedIndexTrain > 0) {
-      if (MyStaDat.A != null && MyStaDat.A!.trainlistA != null) {
-        final trainlist = MyStaDat.A!.trainlistA!;
+      if (MyStaDat.D != null && MyStaDat.D!.trainlistA != null) {
+        final trainlist = MyStaDat.D!.trainlistA!;
 
         setState(() {
           _trains = trainlist;
+          _tdt = TrainDirectionType.A;
         });
       }
     } else {
-      if (MyStaDat.A != null && MyStaDat.A!.trainlistI != null) {
-        final trainlist = MyStaDat.A!.trainlistI!;
+      if (MyStaDat.D != null && MyStaDat.D!.trainlistI != null) {
+        final trainlist = MyStaDat.D!.trainlistI!;
 
         setState(() {
           _trains = trainlist;
+          _tdt = TrainDirectionType.I;
         });
       }
     }
@@ -59,42 +63,11 @@ class TrainListState extends ExpandedSTFState {
         if (index < _trains.length) {
           _row.add(Flexible(
             flex: 1,
-            child: SafeArea(
-              child: Card(
-                child: Container(
-                    constraints: BoxConstraints(minHeight: 100),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          title: Text(_trains[index]['name']),
-                          subtitle: Text("- ${_trains[index]['cm']}"),
-                          trailing: Icon(Icons.info),
-                        ),
-                        Container(
-                          height: 1.0,
-                          margin: EdgeInsets.only(left: 10, right: 10),
-                          color: Colors.grey,
-                        ),
-                        CheckboxListTile(
-                            title: const Text("Show in train graph."),
-                            value: _trains[index]['sh'] == 'true',
-                            onChanged: (value) {
-                              setState(() {
-                                _trains[index]['sh'] =
-                                    value! ? 'true' : 'false';
-                              });
-                            }),
-                        ListTile(
-                          title: Text("Operation Days: "),
-                          subtitle: Container(
-                            margin: EdgeInsets.fromLTRB(10, 2, 10, 10),
-                            child: createDayOp(index),
-                          ),
-                        ),
-                      ],
-                    )),
-              ),
-            ),
+            child: TrainCard(
+                index: index,
+                name: _trains[index]['name'],
+                cm: _trains[index]['cm'],
+                trainDiretion: _tdt),
           ));
         } else {
           _row.add(Flexible(
@@ -141,7 +114,6 @@ class TrainListState extends ExpandedSTFState {
                     onChanged: (value) {
                       var s = (_trains[index]['d'] as String)
                           .replaceRange(i, i + 1, value! ? '1' : '0');
-                      print(s);
                       setState(() {
                         _trains[index]['d'] = s;
                       });

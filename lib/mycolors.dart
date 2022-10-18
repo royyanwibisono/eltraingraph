@@ -18,4 +18,6 @@ class MyAppColors {
   static const Color TABLEHEADER = Color.fromARGB(86, 255, 235, 59);
   static const Color TABLECONTENT = Color.fromARGB(86, 0, 153, 255);
   static const Color TAGS_COLOR = Color.fromARGB(169, 0, 100, 167);
+  static const Color CARD1_COLOR = Color.fromARGB(255, 0, 173, 204);
+  static const Color CARD2_COLOR = Color.fromARGB(255, 196, 176, 0);
 }

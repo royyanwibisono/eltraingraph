@@ -11,7 +11,7 @@ class MyStaDat {
   static bool showSideNavBar = true;
   static int selectedIndex = 0;
   static int selectedIndexTrain = 0;
-  static FetchXmlData? A;
+  static FetchXmlData? D;
   static var styleBtnPanelAct = ElevatedButton.styleFrom(
     backgroundColor: MyAppColors.PANEL_COLOR,
     minimumSize: const Size(40, 40),
@@ -34,5 +34,5 @@ class MyStaDat {
   );
   static String dirRight = "Trains to RIGHT direction";
   static String dirLeft = "Trains to LEFT direction";
-  static Size tableCellSize = const Size(80.0, 25.0);
+  static Size tableCellSize = const Size(100.0, 25.0);
 }

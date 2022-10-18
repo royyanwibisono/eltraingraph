@@ -539,7 +539,7 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
           ),
           // builder: (context) => const SliverIndexPage(),
         ),
-      );
+      ).then((value) => reloadDataPage());
     } else if (MyStaDat.selectedIndex == 1) {
       Navigator.push(
         context,
@@ -549,7 +549,7 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
           ),
           // builder: (context) => const SliverIndexPage(),
         ),
-      );
+      ).then((value) => reloadDataPage());
     } else if (MyStaDat.selectedIndex == 2) {
       Navigator.push(
         context,
@@ -559,7 +559,7 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
           ),
           // builder: (context) => const SliverIndexPage(),
         ),
-      );
+      ).then((value) => reloadDataPage());
     } else if (MyStaDat.selectedIndex == 3) {
       Navigator.push(
         context,
@@ -569,7 +569,7 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
           ),
           // builder: (context) => const SliverIndexPage(),
         ),
-      );
+      ).then((value) => reloadDataPage());
     }
   }
 

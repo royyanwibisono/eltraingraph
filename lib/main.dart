@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  MyStaDat.A = FetchXmlData();
-  MyStaDat.A?.data();
+  MyStaDat.D = FetchXmlData();
+  MyStaDat.D?.data();
   runApp(const MyApp());
 }
 

@@ -35,6 +35,8 @@ class TrainGraphsState extends ExpandedSTFState {
   TooltipBehavior? _tooltip;
   ZoomPanBehavior? _zoomPanBehavior;
   String _timerange = "-";
+  final ScrollController controller = ScrollController();
+  final ScrollController controller2 = ScrollController();
 
   @override
   void loadData() {
@@ -58,11 +60,11 @@ class TrainGraphsState extends ExpandedSTFState {
 
   String getTimeRange() {
     var ret = "-";
-    if (MyStaDat.A != null && MyStaDat.A!.graphProperties != null) {
-      if (MyStaDat.A!.graphProperties!['tMin']!.isNotEmpty &&
-          MyStaDat.A!.graphProperties!['tMax']!.isNotEmpty) {
+    if (MyStaDat.D != null && MyStaDat.D!.graphProperties != null) {
+      if (MyStaDat.D!.graphProperties!['tMin']!.isNotEmpty &&
+          MyStaDat.D!.graphProperties!['tMax']!.isNotEmpty) {
         ret =
-            '${MyStaDat.A!.graphProperties!['tMin']!} - ${MyStaDat.A!.graphProperties!['tMax']!}';
+            '${MyStaDat.D!.graphProperties!['tMin']!} - ${MyStaDat.D!.graphProperties!['tMax']!}';
       }
     }
     return ret;
@@ -71,23 +73,23 @@ class TrainGraphsState extends ExpandedSTFState {
   dynamic createData() {
     var ret = <List<TrTimeTable>>[];
 
-    if (MyStaDat.A != null && MyStaDat.A!.graphProperties != null) {
-      var mod = MyStFunc.getCountValidDay(MyStaDat.A!.graphProperties!['d']!);
-      var tmin = MyStFunc.timeOfDayParse(MyStaDat.A!.graphProperties!['tMin']!);
-      var tmax = MyStFunc.timeOfDayParse(MyStaDat.A!.graphProperties!['tMax']!);
-      bool isRangeDisabled = MyStaDat.A!.graphProperties!['tMax']!.isEmpty ||
-          MyStaDat.A!.graphProperties!['tMin']!.isEmpty;
+    if (MyStaDat.D != null && MyStaDat.D!.graphProperties != null) {
+      var mod = MyStFunc.getCountValidDay(MyStaDat.D!.graphProperties!['d']!);
+      var tmin = MyStFunc.timeOfDayParse(MyStaDat.D!.graphProperties!['tMin']!);
+      var tmax = MyStFunc.timeOfDayParse(MyStaDat.D!.graphProperties!['tMax']!);
+      bool isRangeDisabled = MyStaDat.D!.graphProperties!['tMax']!.isEmpty ||
+          MyStaDat.D!.graphProperties!['tMin']!.isEmpty;
       for (var x = 0; x < mod[0]; x++) {
         if (!mod[2][x]) continue;
-        if (MyStaDat.A!.trainlistA != null && MyStaDat.A!.stationlist != null) {
-          final ta = MyStaDat.A!.trainlistA!;
+        if (MyStaDat.D!.trainlistA != null && MyStaDat.D!.stationlist != null) {
+          final ta = MyStaDat.D!.trainlistA!;
           DateTime now = DateTime.now().add(Duration(days: x));
           DateTime ntmin =
               DateTime(now.year, now.month, now.day, tmin.hour, tmin.minute);
           DateTime ntmax = tmax == TimeOfDay(hour: 0, minute: 0)
               ? DateTime(now.year, now.month, now.day, 23, 59, 59, 9999)
               : DateTime(now.year, now.month, now.day, tmax.hour, tmax.minute);
-          final stations = MyStaDat.A!.stationlist!.reversed.toList();
+          final stations = MyStaDat.D!.stationlist!.reversed.toList();
           for (var i = 0; i < ta.length; i++) {
             //check op day
             if (ta[i]['d'][mod[3][x]] != '1') continue;
@@ -144,15 +146,15 @@ class TrainGraphsState extends ExpandedSTFState {
             ret.add(res);
           }
         }
-        if (MyStaDat.A!.trainlistI != null && MyStaDat.A!.stationlist != null) {
-          final ti = MyStaDat.A!.trainlistI!;
+        if (MyStaDat.D!.trainlistI != null && MyStaDat.D!.stationlist != null) {
+          final ti = MyStaDat.D!.trainlistI!;
           DateTime now = DateTime.now().add(Duration(days: x));
           DateTime ntmin =
               DateTime(now.year, now.month, now.day, tmin.hour, tmin.minute);
           DateTime ntmax = tmax == TimeOfDay(hour: 0, minute: 0)
               ? DateTime(now.year, now.month, now.day, 23, 59, 59, 9999)
               : DateTime(now.year, now.month, now.day, tmax.hour, tmax.minute);
-          final stations = MyStaDat.A!.stationlist!;
+          final stations = MyStaDat.D!.stationlist!;
           for (var i = 0; i < ti.length; i++) {
             //check op day
             if (ti[i]['d'][mod[3][x]] != '1') continue;
@@ -237,8 +239,8 @@ class TrainGraphsState extends ExpandedSTFState {
         DayInWeek("Sat5"),
         DayInWeek("Sun6"),
       ];
-      if (MyStaDat.A!.graphProperties != null) {
-        var d = MyStaDat.A!.graphProperties!['d']!;
+      if (MyStaDat.D != null && MyStaDat.D!.graphProperties != null) {
+        var d = MyStaDat.D!.graphProperties!['d']!;
         for (var x = 0; x < 7; x++) {
           _days[x].isSelected = d[x] == '1';
         }
@@ -271,14 +273,14 @@ class TrainGraphsState extends ExpandedSTFState {
               // ),
             ),
             onSelect: (values) {
-              if (MyStaDat.A != null && MyStaDat.A!.graphProperties != null) {
+              if (MyStaDat.D != null && MyStaDat.D!.graphProperties != null) {
                 var setdays = List.filled(7, '0', growable: true);
                 for (String d in values) {
                   int index = int.parse(d[3]);
                   setdays[index] = '1';
                 }
 
-                MyStaDat.A!.graphProperties!['d'] = setdays.join();
+                MyStaDat.D!.graphProperties!['d'] = setdays.join();
                 loadData();
               }
             },
@@ -344,15 +346,15 @@ class TrainGraphsState extends ExpandedSTFState {
             value: _timerange == "-",
             onChanged: (newValue) {
               if (newValue!) {
-                if (MyStaDat.A?.graphProperties != null) {
-                  MyStaDat.A?.graphProperties!['tMin'] = "";
-                  MyStaDat.A?.graphProperties!['tMax'] = "";
+                if (MyStaDat.D?.graphProperties != null) {
+                  MyStaDat.D?.graphProperties!['tMin'] = "";
+                  MyStaDat.D?.graphProperties!['tMax'] = "";
                   loadData();
                 }
               } else {
-                if (MyStaDat.A?.graphProperties != null) {
-                  MyStaDat.A?.graphProperties!['tMin'] = "00:00";
-                  MyStaDat.A?.graphProperties!['tMax'] = "00:00";
+                if (MyStaDat.D?.graphProperties != null) {
+                  MyStaDat.D?.graphProperties!['tMin'] = "00:00";
+                  MyStaDat.D?.graphProperties!['tMax'] = "00:00";
                   loadData();
                 }
               }
@@ -389,10 +391,10 @@ class TrainGraphsState extends ExpandedSTFState {
           start: start,
           end: end,
         );
-        if (result != null && MyStaDat.A?.graphProperties != null) {
-          MyStaDat.A?.graphProperties!['tMin'] =
+        if (result != null && MyStaDat.D?.graphProperties != null) {
+          MyStaDat.D?.graphProperties!['tMin'] =
               MyStFunc.TODtoStr(result.startTime);
-          MyStaDat.A?.graphProperties!['tMax'] =
+          MyStaDat.D?.graphProperties!['tMax'] =
               MyStFunc.TODtoStr(result.endTime);
           loadData();
         }
@@ -403,59 +405,98 @@ class TrainGraphsState extends ExpandedSTFState {
 
   @override
   getChild() {
-    var container = Container(
-      height: (MediaQuery.of(context).size.height * 0.8) < 600
-          ? 600
-          : MediaQuery.of(context).size.height * 0.8,
-      child: data.isNotEmpty
-          ? SfCartesianChart(
-              backgroundColor:
-                  MyStFunc.hexToColor(MyStaDat.A!.graphProperties!['bgC']!)
-                      .withAlpha(25),
-              // legend: Legend(
-              //     isVisible: true,
-              //     position: LegendPosition.top,
-              //     shouldAlwaysShowScrollbar: true,
-              //     isResponsive: true),
-              tooltipBehavior: _tooltip,
-              zoomPanBehavior: _zoomPanBehavior,
-              primaryXAxis: DateTimeAxis(
-                opposedPosition: true,
-                intervalType: DateTimeIntervalType.minutes,
-                interval: 60,
-                multiLevelLabelStyle: const MultiLevelLabelStyle(
-                  // borderColor: Colors.blue,
-                  // borderWidth: 0.001,
-                  borderType: MultiLevelBorderType.curlyBrace,
-                ),
-                multiLevelLabels: createDayLabel,
-              ),
-              primaryYAxis: NumericAxis(
-                isInversed: true,
-                majorGridLines: const MajorGridLines(width: 0),
-                axisLine: const AxisLine(width: 0),
-                // labelFormat: '{value}Km',
-                title: AxisTitle(text: "Station"),
-                isVisible: true,
-                labelRotation: 315,
-                minimum: MyStaDat.A!.stationlist != null
-                    ? double.parse(MyStaDat.A!.stationlist![0]['kml']) - 2
-                    : 0,
-                multiLevelLabelStyle: const MultiLevelLabelStyle(
-                  // borderColor: Colors.blue,
-                  borderWidth: 0.01,
-                  borderType: MultiLevelBorderType.withoutTopAndBottom,
-                ),
-                multiLevelLabels: createStationLabel,
-              ),
-              series: <ChartSeries<TrTimeTable, DateTime>>[
-                ...createStation(),
-                ...createChart(data),
-              ],
-            )
-          : const Center(
-              child: Text("loading data..."),
+    var sideTimeMonitor = MediaQuery.of(context).size.width;
+    var sideStatMonitor = MediaQuery.of(context).size.height;
+    var sideTime = MyResponsive.TABLETMAX;
+    var sideStation =
+        (sideStatMonitor * 0.8) < 600.0 ? 600.0 : sideStatMonitor * 0.8;
+    if (MyStaDat.D != null && MyStaDat.D!.graphProperties != null) {
+      var c = MyStFunc.getCountValidDay(MyStaDat.D!.graphProperties!['d']!);
+      sideTime = c[0] * sideTime;
+    }
+    if (MyStaDat.D != null && MyStaDat.D!.stationlist != null) {
+      sideStation = (double.parse(MyStaDat.D!.stationlist!.last['kml']) -
+              double.parse(MyStaDat.D!.stationlist!.first['kmr'])) *
+          12.0;
+    }
+    if (widget.isExpand) {
+      sideTime = sideTime < sideTimeMonitor ? sideTimeMonitor : sideTime;
+      sideStation = sideStation < sideStatMonitor - 56
+          ? sideStatMonitor - 56
+          : sideStation;
+    }
+
+    var container = Scrollbar(
+      controller: controller2,
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        controller: controller2,
+        scrollDirection: Axis.horizontal,
+        child: Scrollbar(
+          controller: controller,
+          thumbVisibility: true,
+          scrollbarOrientation: ScrollbarOrientation.left,
+          child: SingleChildScrollView(
+            controller: controller,
+            child: SizedBox(
+              width: sideTime,
+              height: sideStation,
+              child: data.isNotEmpty
+                  ? SfCartesianChart(
+                      backgroundColor: MyStaDat.D != null
+                          ? MyStFunc.hexToColor(
+                                  MyStaDat.D!.graphProperties!['bgC']!)
+                              .withAlpha(25)
+                          : Colors.transparent,
+                      // legend: Legend(
+                      //     isVisible: true,
+                      //     position: LegendPosition.top,
+                      //     shouldAlwaysShowScrollbar: true,
+                      //     isResponsive: true),
+                      tooltipBehavior: _tooltip,
+                      zoomPanBehavior: _zoomPanBehavior,
+                      primaryXAxis: DateTimeAxis(
+                        opposedPosition: true,
+                        intervalType: DateTimeIntervalType.minutes,
+                        interval: 60,
+                        multiLevelLabelStyle: const MultiLevelLabelStyle(
+                          // borderColor: Colors.blue,
+                          // borderWidth: 0.001,
+                          borderType: MultiLevelBorderType.curlyBrace,
+                        ),
+                        multiLevelLabels: createDayLabel,
+                      ),
+                      primaryYAxis: NumericAxis(
+                        isInversed: true,
+                        majorGridLines: const MajorGridLines(width: 0),
+                        axisLine: const AxisLine(width: 0),
+                        // labelFormat: '{value}Km',
+                        title: AxisTitle(text: "Station"),
+                        isVisible: true,
+                        labelRotation: 315,
+                        minimum: MyStaDat.D!.stationlist != null
+                            ? double.parse(MyStaDat.D!.stationlist![0]['kml']) -
+                                2
+                            : 0,
+                        multiLevelLabelStyle: const MultiLevelLabelStyle(
+                          // borderColor: Colors.blue,
+                          borderWidth: 0.01,
+                          borderType: MultiLevelBorderType.withoutTopAndBottom,
+                        ),
+                        multiLevelLabels: createStationLabel,
+                      ),
+                      series: <ChartSeries<TrTimeTable, DateTime>>[
+                        ...createStation(),
+                        ...createChart(data),
+                      ],
+                    )
+                  : const Center(
+                      child: Text("loading data..."),
+                    ),
             ),
+          ),
+        ),
+      ),
     );
     if (widget.isExpand) {
       return container;
@@ -467,8 +508,8 @@ class TrainGraphsState extends ExpandedSTFState {
   }
 
   List<DateTimeMultiLevelLabel> get createDayLabel {
-    if (MyStaDat.A != null && MyStaDat.A!.graphProperties != null) {
-      var mod = MyStFunc.getCountValidDay(MyStaDat.A!.graphProperties!['d']!);
+    if (MyStaDat.D != null && MyStaDat.D!.graphProperties != null) {
+      var mod = MyStFunc.getCountValidDay(MyStaDat.D!.graphProperties!['d']!);
       var ret = <DateTimeMultiLevelLabel>[];
       for (var x = 0; x < mod[0]; x++) {
         var dt = DateTime.now().add(Duration(days: x));
@@ -486,9 +527,9 @@ class TrainGraphsState extends ExpandedSTFState {
   }
 
   List<NumericMultiLevelLabel> get createStationLabel {
-    if (MyStaDat.A != null && MyStaDat.A!.stationlist != null) {
+    if (MyStaDat.D != null && MyStaDat.D!.stationlist != null) {
       var ret = <NumericMultiLevelLabel>[];
-      for (var st in MyStaDat.A!.stationlist!) {
+      for (var st in MyStaDat.D!.stationlist!) {
         var km = double.parse(st['kml']);
         ret.add(NumericMultiLevelLabel(
             start: km - 0.5, end: km + 0.5, text: st['name']));
@@ -529,13 +570,13 @@ class TrainGraphsState extends ExpandedSTFState {
   List<FastLineSeries<TrTimeTable, DateTime>> createStation() {
     var ret = <FastLineSeries<TrTimeTable, DateTime>>[];
     // var now = DateTime.now();
-    if (MyStaDat.A != null &&
-        MyStaDat.A!.stationlist != null &&
-        MyStaDat.A!.graphProperties != null) {
-      var mod = MyStFunc.getCountValidDay(MyStaDat.A!.graphProperties!['d']!);
+    if (MyStaDat.D != null &&
+        MyStaDat.D!.stationlist != null &&
+        MyStaDat.D!.graphProperties != null) {
+      var mod = MyStFunc.getCountValidDay(MyStaDat.D!.graphProperties!['d']!);
       for (var x = 0; x < mod[0]; x++) {
         var now = DateTime.now().add(Duration(days: x));
-        for (var st in MyStaDat.A!.stationlist!) {
+        for (var st in MyStaDat.D!.stationlist!) {
           var dsc = [
             TrTimeTable(st['name'], double.parse(st['kml']),
                 DateTime(now.year, now.month, now.day, 0, 0, 0)),

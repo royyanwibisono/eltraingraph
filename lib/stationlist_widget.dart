@@ -24,8 +24,8 @@ class StationListState extends ExpandedSTFState {
   // This function will be triggered when the app starts
   @override
   void loadData() {
-    if (MyStaDat.A != null && MyStaDat.A!.stationlist != null) {
-      final stationList = MyStaDat.A!.stationlist!;
+    if (MyStaDat.D != null && MyStaDat.D!.stationlist != null) {
+      final stationList = MyStaDat.D!.stationlist!;
       if (stationList.length >= 2) {
         MyStaDat.dirRight =
             "Trains from ${stationList.first['name']} heading to ${stationList.last['name']}";

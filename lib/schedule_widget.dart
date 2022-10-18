@@ -32,16 +32,16 @@ class SchedulesState extends ExpandedSTFState {
     header.add(
       "Train",
     );
-    if (MyStaDat.A != null && MyStaDat.A!.stationlist != null) {
+    if (MyStaDat.D != null && MyStaDat.D!.stationlist != null) {
       var stationList = MyStaDat.selectedIndexTrain > 0
-          ? MyStaDat.A!.stationlist!.reversed.toList()
-          : MyStaDat.A!.stationlist!;
+          ? MyStaDat.D!.stationlist!.reversed.toList()
+          : MyStaDat.D!.stationlist!;
 
       if (stationList.length >= 2) {
         MyStaDat.dirRight =
-            "Trains from ${MyStaDat.A!.stationlist!.first['name']} heading to ${MyStaDat.A!.stationlist!.last['name']}";
+            "Trains from ${MyStaDat.D!.stationlist!.first['name']} heading to ${MyStaDat.D!.stationlist!.last['name']}";
         MyStaDat.dirLeft =
-            "Trains from ${MyStaDat.A!.stationlist!.last['name']} heading to ${MyStaDat.A!.stationlist!.first['name']}";
+            "Trains from ${MyStaDat.D!.stationlist!.last['name']} heading to ${MyStaDat.D!.stationlist!.first['name']}";
       }
 
       for (var i = 0; i < stationList.length; i++) {
@@ -57,8 +57,8 @@ class SchedulesState extends ExpandedSTFState {
     ret.add(header);
 
     if (MyStaDat.selectedIndexTrain > 0) {
-      if (MyStaDat.A != null && MyStaDat.A!.trainlistA != null) {
-        final ta = MyStaDat.A!.trainlistA!;
+      if (MyStaDat.D != null && MyStaDat.D!.trainlistA != null) {
+        final ta = MyStaDat.D!.trainlistA!;
         for (var i = 0; i < ta.length; i++) {
           var res = <String>[];
           res.add(
@@ -79,8 +79,8 @@ class SchedulesState extends ExpandedSTFState {
         }
       }
     } else {
-      if (MyStaDat.A != null && MyStaDat.A!.trainlistI != null) {
-        final ti = MyStaDat.A!.trainlistI!;
+      if (MyStaDat.D != null && MyStaDat.D!.trainlistI != null) {
+        final ti = MyStaDat.D!.trainlistI!;
         for (var i = 0; i < ti.length; i++) {
           var res = <String>[];
           res.add(
