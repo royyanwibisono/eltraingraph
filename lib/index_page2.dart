@@ -1,32 +1,24 @@
-import 'dart:io';
-
-import 'package:eltraingraph/index_page2.dart';
+import 'package:eltraingraph/content_widget.dart';
+import 'package:eltraingraph/index_page.dart';
 import 'package:eltraingraph/login_page.dart';
 import 'package:eltraingraph/mycolors.dart';
 import 'package:eltraingraph/myresponsive.dart';
-import 'package:eltraingraph/content_widget.dart';
 import 'package:eltraingraph/mystaticdata.dart';
-import 'package:eltraingraph/mystaticfunction.dart';
-// import 'package:eltraingraph/dwfile.dart';
 import 'package:eltraingraph/schedule_widget.dart';
 import 'package:eltraingraph/stationlist_widget.dart';
 import 'package:eltraingraph/traingraph_widget.dart';
 import 'package:eltraingraph/trainlist_widget.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class IndexPage extends StatefulWidget {
-  const IndexPage({super.key});
+class IndexPage2 extends StatefulWidget {
+  const IndexPage2({super.key});
 
   @override
-  State<IndexPage> createState() => _IndexPageState();
+  State<IndexPage2> createState() => _IndexPage2State();
 }
 
-class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
-  TabController? tabController;
-  double appBarWidth = MyResponsive.PHONEWIDTHMAX;
+class _IndexPage2State extends State<IndexPage2> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final List<GlobalKey<ContentPageState>> _myContentKeys = [
     GlobalKey<ContentPageState>(),
@@ -40,58 +32,10 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
   var graphKey = GlobalKey<TrainGraphsState>();
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-        (_) => Future.delayed(const Duration(milliseconds: 500), () {
-              reloadDataPage();
-            }));
-  }
-
-  @override
   Widget build(BuildContext context) {
-    List<Widget> myTabcontents = createTabsContent();
-    TabBar myTabBar = createTabsBar();
-
-    return DefaultTabController(
-      initialIndex: MyStaDat.selectedIndex,
-      length: myTabcontents.length,
-      // The Builder widget is used to have a different BuildContext to access
-      // closest DefaultTabController.
-      child: Builder(builder: (BuildContext context) {
-        tabController = DefaultTabController.of(context)!;
-        tabController?.addListener(() {
-          if (!tabController!.indexIsChanging) {
-            setState(() {
-              MyStaDat.selectedIndex = tabController!.index;
-            });
-          }
-        });
-
-        return createScaffold(context, myTabcontents, appBarWidth, myTabBar);
-      }),
-    );
-  }
-
-  Scaffold createScaffold(BuildContext context, List<Widget> myTabcontents,
-      double appBarWidth, TabBar myTabBar) {
     return Scaffold(
+      // appBar: AppBar(title: Text("Title")),
       key: _scaffoldKey,
-      backgroundColor: MyAppColors.BG_COLOR,
-      floatingActionButton: FloatingActionButton(
-        heroTag: "fab",
-        // mini: true,
-        onPressed: () {
-          setState(() {
-            MyStaDat.scrollState[MyStaDat.selectedIndex] = 0.0;
-            // myTabcontents[MyStaDat.selectedIndex]
-            _myContentKeys[MyStaDat.selectedIndex]
-                .currentState!
-                .scrollToPosition(true);
-          });
-        },
-        child: Icon(Icons.arrow_upward),
-      ),
       drawer: Drawer(
         backgroundColor: MyAppColors.ACCENT_COLOR,
         child: Stack(
@@ -158,90 +102,80 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
                 SizedBox(
                   width: MediaQuery.of(context).size.width -
                       MyResponsive.NAVBARWIDTH,
-                  child: createMainPage(
-                      context, myTabcontents, appBarWidth, myTabBar),
+                  child: cretaeMainPage(),
                 )
               ],
             )
-          : createMainPage(context, myTabcontents, appBarWidth, myTabBar),
+          : cretaeMainPage(),
+      backgroundColor: MyAppColors.BG_COLOR,
     );
   }
 
-  TabBar createTabsBar() {
-    bool isMobile = MediaQuery.of(context).size.width -
-            (MyStaDat.showSideNavBar ? 0 : MyResponsive.NAVBARWIDTH) <
-        MyResponsive.PHONEWIDTHMAX;
-
-    return TabBar(
-        // indicatorColor: Colors.red,
-        indicator: const BoxDecoration(
-            // backgroundBlendMode: BlendMode.colorDodge,
-            //color: Color.fromARGB(110, 250, 133, 0),
-            border: Border(
-                bottom:
-                    BorderSide(color: MyAppColors.SELECTEDTABLINE, width: 4))),
-        splashFactory: InkRipple.splashFactory,
-        // overlayColor: MaterialStateProperty.resolveWith<Color?>(
-        //   (Set<MaterialState> states) {
-        //     return states.contains(MaterialState.focused) ? null : Colors.amber;
-        //   },
-        // ),
-        splashBorderRadius: MyStaDat.selectedIndex != 1
-            ? const BorderRadius.all(Radius.circular(0))
-            : const BorderRadius.all(Radius.circular(10)),
-        tabs: <Widget>[
-          Tab(
-            icon: const Icon(Icons.flag_outlined),
-            text: isMobile ? null : "STATIONS",
-          ),
-          Tab(
-            icon: const Icon(Icons.train),
-            text: isMobile ? null : "TRAINS",
-          ),
-          Tab(
-            icon: const Icon(Icons.schedule),
-            text: isMobile ? null : "SCHEDULE",
-          ),
-          Tab(
-            icon: const Icon(Icons.auto_graph),
-            text: isMobile ? null : "GRAPH",
-          )
-        ]);
-  }
-
-  List<Widget> createTabsContent() {
-    return <Widget>[
-      ContentPage(
-        title: "Station List",
-        iconData: Icons.flag,
-        index: 0,
-        key: _myContentKeys[0],
-        child: StationList(key: stListKey),
-      ),
-      ContentPage(
-        title: "Train List",
-        iconData: Icons.train,
-        panelButtons: createPanelDirBtns(),
-        index: 1,
-        key: _myContentKeys[1],
-        child: TrainList(key: trListKey),
-      ),
-      ContentPage(
-        title: "Train Schedule",
-        iconData: Icons.table_chart_outlined,
-        panelButtons: createPanelDirBtns(),
-        index: 2,
-        key: _myContentKeys[2],
-        child: Schedules(key: schdleKey),
-      ),
-      ContentPage(
-        title: "Train Graph",
-        iconData: Icons.add_chart,
-        index: 3,
-        key: _myContentKeys[3],
-        child: TrainGraphs(key: graphKey),
-      )
-    ];
+  Widget cretaeMainPage() {
+    return Stack(children: [
+      (MyStaDat.selectedIndex == 0
+          ? ContentPage(
+              title: "Station List",
+              iconData: Icons.flag,
+              index: 0,
+              key: _myContentKeys[0],
+              child: StationList(key: stListKey),
+            )
+          : MyStaDat.selectedIndex == 1
+              ? ContentPage(
+                  title: "Train List",
+                  iconData: Icons.train,
+                  panelButtons: createPanelDirBtns(),
+                  index: 1,
+                  key: _myContentKeys[1],
+                  child: TrainList(key: trListKey),
+                )
+              : MyStaDat.selectedIndex == 2
+                  ? ContentPage(
+                      title: "Train Schedule",
+                      iconData: Icons.table_chart_outlined,
+                      panelButtons: createPanelDirBtns(),
+                      index: 2,
+                      key: _myContentKeys[2],
+                      child: Schedules(key: schdleKey),
+                    )
+                  : ContentPage(
+                      title: "Train Graph",
+                      iconData: Icons.add_chart,
+                      index: 3,
+                      key: _myContentKeys[3],
+                      child: TrainGraphs(key: graphKey),
+                    )),
+      !((MediaQuery.of(context).size.width >
+                  MyResponsive.PHONEWIDTHMAX + MyResponsive.NAVBARWIDTH) &&
+              MyStaDat.showSideNavBar)
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  child: IconButton(
+                      icon: const Icon(Icons.menu),
+                      color: MyAppColors.ACCENT_COLOR,
+                      onPressed: () {
+                        _scaffoldKey.currentState!.openDrawer();
+                      }),
+                ),
+                SizedBox(
+                  child: IconButton(
+                    icon: const Icon(Icons.logout),
+                    color: MyAppColors.ACCENT_COLOR,
+                    onPressed: () {
+                      // Navigator.pushReplacement(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => const LoginPage()));
+                    },
+                  ),
+                )
+              ],
+            )
+          : Container(),
+    ]);
   }
 
   List<Widget> createPanelDirBtns() {
@@ -291,6 +225,14 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
     ];
   }
 
+  void closeSideNavBar(BuildContext context) {
+    if (!MyStaDat.showSideNavBar ||
+        MediaQuery.of(context).size.width <=
+            (MyResponsive.PHONEWIDTHMAX + MyResponsive.NAVBARWIDTH)) {
+      Navigator.pop(context);
+    }
+  }
+
   void reloadDataPage() {
     if (MyStaDat.selectedIndex == 0) {
       stListKey.currentState!.loadData();
@@ -300,6 +242,50 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
       schdleKey.currentState!.loadData();
     } else if (MyStaDat.selectedIndex == 3) {
       graphKey.currentState!.loadData();
+    }
+  }
+
+  void expandWidget(BuildContext context) {
+    if (MyStaDat.selectedIndex == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const StationList(
+            isExpand: true,
+          ),
+          // builder: (context) => const SliverIndexPage(),
+        ),
+      ).then((value) => reloadDataPage());
+    } else if (MyStaDat.selectedIndex == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const TrainList(
+            isExpand: true,
+          ),
+          // builder: (context) => const SliverIndexPage(),
+        ),
+      ).then((value) => reloadDataPage());
+    } else if (MyStaDat.selectedIndex == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Schedules(
+            isExpand: true,
+          ),
+          // builder: (context) => const SliverIndexPage(),
+        ),
+      ).then((value) => reloadDataPage());
+    } else if (MyStaDat.selectedIndex == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const TrainGraphs(
+            isExpand: true,
+          ),
+          // builder: (context) => const SliverIndexPage(),
+        ),
+      ).then((value) => reloadDataPage());
     }
   }
 
@@ -354,29 +340,6 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.all(20),
-                    child: RichText(
-                      textAlign: TextAlign.justify,
-                      text: const TextSpan(
-                        style: textStyleLight,
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: 'Information \n',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(
-                              text: 'EltrainGraph ',
-                              style:
-                                  TextStyle(color: MyAppColors.PRIMARY_COLOR)),
-                          TextSpan(
-                              text:
-                                  'is  is an application, that enables operator to create train graphs in convenient way to display the graphs both in a planning mode, as well as in a live mode according to the specific delays of trains. '),
-                        ],
-                      ),
-                    ),
-                  ),
                   Container(
                     color: MyAppColors.PRIMARY_COLOR,
                     margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -387,6 +350,81 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
                     color: MyAppColors.ACCENT_COLOR,
                     child: Column(
                       children: [
+                        ListTile(
+                          enabled: MyStaDat.selectedIndex != 0,
+                          selected: MyStaDat.selectedIndex == 0,
+                          iconColor: MyAppColors.FONT_LIGHT_COLOR,
+                          textColor: MyAppColors.FONT_LIGHT_COLOR,
+                          leading: const Icon(
+                            Icons.flag,
+                          ),
+                          title: const Text(
+                            'Stations',
+                          ),
+                          onTap: () {
+                            setState(() {
+                              MyStaDat.selectedIndex = 0;
+                            });
+                          },
+                        ),
+                        ListTile(
+                          enabled: MyStaDat.selectedIndex != 1,
+                          selected: MyStaDat.selectedIndex == 1,
+                          iconColor: MyAppColors.FONT_LIGHT_COLOR,
+                          textColor: MyAppColors.FONT_LIGHT_COLOR,
+                          leading: const Icon(
+                            Icons.train,
+                          ),
+                          title: const Text(
+                            'Trains',
+                          ),
+                          onTap: () {
+                            setState(() {
+                              MyStaDat.selectedIndex = 1;
+                            });
+                          },
+                        ),
+                        ListTile(
+                          enabled: MyStaDat.selectedIndex != 2,
+                          selected: MyStaDat.selectedIndex == 2,
+                          iconColor: MyAppColors.FONT_LIGHT_COLOR,
+                          textColor: MyAppColors.FONT_LIGHT_COLOR,
+                          leading: const Icon(
+                            Icons.schedule,
+                          ),
+                          title: const Text(
+                            'Schedule',
+                            style: textStyleLight,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              MyStaDat.selectedIndex = 2;
+                            });
+                          },
+                        ),
+                        ListTile(
+                          enabled: MyStaDat.selectedIndex != 3,
+                          selected: MyStaDat.selectedIndex == 3,
+                          iconColor: MyAppColors.FONT_LIGHT_COLOR,
+                          textColor: MyAppColors.FONT_LIGHT_COLOR,
+                          leading: const Icon(
+                            Icons.auto_graph,
+                          ),
+                          title: const Text(
+                            'Train Graph',
+                            style: textStyleLight,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              MyStaDat.selectedIndex = 3;
+                            });
+                          },
+                        ),
+                        Container(
+                          color: MyAppColors.PRIMARY_COLOR,
+                          margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                          height: 1,
+                        ),
                         // ListTile(
                         //   leading: const Icon(
                         //     Icons.file_open,
@@ -510,7 +548,7 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const IndexPage2(),
+                                    builder: (context) => const IndexPage(),
                                     // builder: (context) => const SliverIndexPage(),
                                   ));
                             },
@@ -536,155 +574,6 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
             ],
           ),
         ),
-      ],
-    );
-  }
-
-  void expandWidget(BuildContext context) {
-    if (MyStaDat.selectedIndex == 0) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const StationList(
-            isExpand: true,
-          ),
-          // builder: (context) => const SliverIndexPage(),
-        ),
-      ).then((value) => reloadDataPage());
-    } else if (MyStaDat.selectedIndex == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const TrainList(
-            isExpand: true,
-          ),
-          // builder: (context) => const SliverIndexPage(),
-        ),
-      ).then((value) => reloadDataPage());
-    } else if (MyStaDat.selectedIndex == 2) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const Schedules(
-            isExpand: true,
-          ),
-          // builder: (context) => const SliverIndexPage(),
-        ),
-      ).then((value) => reloadDataPage());
-    } else if (MyStaDat.selectedIndex == 3) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const TrainGraphs(
-            isExpand: true,
-          ),
-          // builder: (context) => const SliverIndexPage(),
-        ),
-      ).then((value) => reloadDataPage());
-    }
-  }
-
-  void closeSideNavBar(BuildContext context) {
-    if (!MyStaDat.showSideNavBar ||
-        MediaQuery.of(context).size.width <=
-            (MyResponsive.PHONEWIDTHMAX + MyResponsive.NAVBARWIDTH)) {
-      Navigator.pop(context);
-    }
-  }
-
-  Stack createMainPage(BuildContext context, List<Widget> myTabcontents,
-      double appBarWidth, TabBar myTabBar) {
-    return Stack(
-      children: [
-        TabBarView(children: myTabcontents),
-        Positioned(
-          left: MediaQuery.of(context).size.width > MyResponsive.PHONEWIDTHMAX
-              ? ((MediaQuery.of(context).size.width -
-                      ((MediaQuery.of(context).size.width >
-                                  MyResponsive.PHONEWIDTHMAX +
-                                      MyResponsive.NAVBARWIDTH) &&
-                              MyStaDat.showSideNavBar
-                          ? MyResponsive.NAVBARWIDTH
-                          : 0) -
-                      appBarWidth) /
-                  2)
-              : 0,
-          child: SizedBox(
-            width:
-                MediaQuery.of(context).size.width > MyResponsive.PHONEWIDTHMAX
-                    ? appBarWidth
-                    : MediaQuery.of(context).size.width,
-            height: (MediaQuery.of(context).size.width >
-                    MyResponsive.PHONEWIDTHMAX + MyResponsive.NAVBARWIDTH)
-                ? myTabBar.preferredSize.height * 1.0
-                : myTabBar.preferredSize.height * 1.7,
-            child: AppBar(
-              // title: const Text('TITLE'),
-              actions: [
-                IconButton(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  icon: const Icon(Icons.logout),
-                  onPressed: () {
-                    // Navigator.pushReplacement(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => const LoginPage()));
-                  },
-                ),
-              ],
-              // toolbarHeight: 0,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.zero,
-                    topRight: Radius.zero,
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10)),
-              ),
-              bottom: PreferredSize(
-                preferredSize: Size.fromHeight(myTabBar.preferredSize.height),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.zero,
-                      topRight: Radius.zero,
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10)),
-                  child: myTabBar,
-                ),
-              ),
-            ),
-          ),
-        ),
-        Container(
-          child: (MediaQuery.of(context).size.width >
-                      MyResponsive.PHONEWIDTHMAX + MyResponsive.NAVBARWIDTH) &&
-                  !MyStaDat.showSideNavBar
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      child: IconButton(
-                          icon: const Icon(Icons.menu),
-                          color: MyAppColors.ACCENT_COLOR,
-                          onPressed: () {
-                            _scaffoldKey.currentState!.openDrawer();
-                          }),
-                    ),
-                    SizedBox(
-                      child: IconButton(
-                        icon: const Icon(Icons.logout),
-                        color: MyAppColors.ACCENT_COLOR,
-                        onPressed: () {
-                          // Navigator.pushReplacement(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => const LoginPage()));
-                        },
-                      ),
-                    )
-                  ],
-                )
-              : Container(),
-        )
       ],
     );
   }

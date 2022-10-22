@@ -2,6 +2,7 @@
 
 import 'package:eltraingraph/fetchxmldata.dart';
 import 'package:eltraingraph/index_page.dart';
+import 'package:eltraingraph/index_page2.dart';
 // import 'package:eltraingraph/login_page.dart';
 import 'package:eltraingraph/mystaticdata.dart';
 // import 'package:eltraingraph/rwfile.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       // home: LoginPage(),
-      home: IndexPage(),
+      home: IndexPage2(),
       // home: TestWidget(),
       title: 'EltrainGraph',
       theme: ThemeData(

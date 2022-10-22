@@ -76,8 +76,8 @@ class ContentPageState extends State<ContentPage> {
     return Container(
       child: NotificationListener<ScrollNotification>(
         onNotification: (scrollNotification) {
-          // MyStaDat.scrollState[widget.index] =
-          //     scrollNotification.metrics.pixels; // <-- This is it.
+          MyStaDat.scrollState[widget.index] =
+              scrollNotification.metrics.pixels; // <-- This is it.
           return false;
         },
         child: ListView(
