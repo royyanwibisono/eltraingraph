@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       // home: LoginPage(),
-      home: IndexPage2(),
+      home: IndexPage(),
       // home: TestWidget(),
       title: 'EltrainGraph',
       theme: ThemeData(

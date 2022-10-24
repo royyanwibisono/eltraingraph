@@ -63,7 +63,7 @@ class MyStFunc {
       List<int> list = utf8.encode(source);
       Uint8List bytes = Uint8List.fromList(list);
       await FileSaver.instance
-          .saveFile("Eltraingraph.xml", bytes, 'xml', mimeType: MimeType.OTHER);
+          .saveFile("Eltraingraph.xml", bytes, '', mimeType: MimeType.OTHER);
       showMyDialog(context, "Info", "File saved!");
     }
   }

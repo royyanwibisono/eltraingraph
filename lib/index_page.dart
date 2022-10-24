@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:eltraingraph/dwfile.dart';
 import 'package:eltraingraph/index_page2.dart';
 import 'package:eltraingraph/login_page.dart';
 import 'package:eltraingraph/mycolors.dart';
@@ -387,40 +388,40 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
                     color: MyAppColors.ACCENT_COLOR,
                     child: Column(
                       children: [
-                        // ListTile(
-                        //   leading: const Icon(
-                        //     Icons.file_open,
-                        //     color: MyAppColors.FONT_LIGHT_COLOR,
-                        //   ),
-                        //   title: const Text(
-                        //     'Open File',
-                        //     style: textStyleLight,
-                        //   ),
-                        //   onTap: () async {
-                        //     closeSideNavBar(context);
-                        //     FilePickerResult? result =
-                        //         await FilePicker.platform.pickFiles(
-                        //       type: FileType.custom,
-                        //       allowedExtensions: ['xml', 'fpl'],
-                        //     );
+                        ListTile(
+                          leading: const Icon(
+                            Icons.file_open,
+                            color: MyAppColors.FONT_LIGHT_COLOR,
+                          ),
+                          title: const Text(
+                            'Open File',
+                            style: textStyleLight,
+                          ),
+                          onTap: () async {
+                            closeSideNavBar(context);
+                            FilePickerResult? result =
+                                await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: ['xml', 'fpl'],
+                            );
 
-                        //     if (result != null) {
-                        //       if (kIsWeb) {
-                        //         Uint8List fileBytes = result.files.first.bytes!;
-                        //         String contents =
-                        //             String.fromCharCodes(fileBytes);
-                        //         MyStaDat.A?.updateData(contents);
-                        //         reloadDataPage();
-                        //       } else {
-                        //         File file = File(result.files.single.path!);
-                        //         file.readAsString().then((String contents) {
-                        //           MyStaDat.A?.updateData(contents);
-                        //           reloadDataPage();
-                        //         });
-                        //       }
-                        //     }
-                        //   },
-                        // ),
+                            if (result != null) {
+                              if (kIsWeb) {
+                                Uint8List fileBytes = result.files.first.bytes!;
+                                String contents =
+                                    String.fromCharCodes(fileBytes);
+                                MyStaDat.D?.updateData(contents);
+                                reloadDataPage();
+                              } else {
+                                File file = File(result.files.single.path!);
+                                file.readAsString().then((String contents) {
+                                  MyStaDat.D?.updateData(contents);
+                                  reloadDataPage();
+                                });
+                              }
+                            }
+                          },
+                        ),
                         // ListTile(
                         //   leading: const Icon(
                         //     Icons.save,
@@ -435,6 +436,7 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
                         //     MyStFunc.saveFile(context);
                         //   },
                         // ),
+                        WebDownload(), // for web save file
                         ListTile(
                           leading: const Icon(
                             Icons.filter_center_focus,
@@ -487,34 +489,34 @@ class _IndexPageState extends State<IndexPage> with TickerProviderStateMixin {
                       margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                       height: 1,
                     ),
-                    AboutListTile(
-                      icon: const Icon(
+                    const AboutListTile(
+                      icon: Icon(
                         Icons.info,
                       ),
-                      applicationIcon: const Icon(
+                      applicationIcon: Icon(
                         Icons.auto_graph,
                       ),
                       applicationName: MyStaDat.APPTITLE,
                       applicationVersion: '1.0.0',
                       applicationLegalese: '© 2022 Royyan',
                       aboutBoxChildren: [
-                        const SizedBox(height: 30),
-                        const Text(
+                        SizedBox(height: 30),
+                        Text(
                           "e-mail: developerroyyan@gmail.com",
                           style: TextStyle(
                               color: MyAppColors.FONT_DARK_COLOR,
                               fontWeight: FontWeight.w500),
                         ),
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const IndexPage2(),
-                                    // builder: (context) => const SliverIndexPage(),
-                                  ));
-                            },
-                            child: Text("swap layout")),
+                        // TextButton(
+                        //     onPressed: () {
+                        //       Navigator.pushReplacement(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //             builder: (context) => const IndexPage2(),
+                        //             // builder: (context) => const SliverIndexPage(),
+                        //           ));
+                        //     },
+                        //     child: Text("swap layout")),
                       ],
                       child: Text('About app'),
                     ),
